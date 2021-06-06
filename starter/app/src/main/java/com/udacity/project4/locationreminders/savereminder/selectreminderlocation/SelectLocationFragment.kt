@@ -36,6 +36,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import kotlinx.android.synthetic.main.activity_reminders.*
+import kotlinx.android.synthetic.main.fragment_select_location.*
 import org.koin.android.ext.android.inject
 
 class SelectLocationFragment : BaseFragment() {
@@ -69,8 +70,7 @@ class SelectLocationFragment : BaseFragment() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             return@OnMapReadyCallback
-        }
-        else{
+        } else {
             mMap.isMyLocationEnabled = true
             mMap.uiSettings.isMyLocationButtonEnabled = false
         }
@@ -103,9 +103,9 @@ class SelectLocationFragment : BaseFragment() {
         //call this function after the user confirms on the selected location
         getRuntimePermissions()
         binding.proceed.setOnClickListener {
-            if(getRuntimePermissions())
+            if (getRuntimePermissions())
                 onLocationSelected()
-            else{
+            else {
                 Snackbar.make(
                     binding.root,
                     "Please allow all the permissions",
@@ -154,17 +154,21 @@ class SelectLocationFragment : BaseFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        // TODO: Change the map type based on the user's selection.
+        // Change the map type based on the user's selection.
         R.id.normal_map -> {
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
             true
         }
         R.id.hybrid_map -> {
+            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID)
             true
         }
         R.id.satellite_map -> {
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE)
             true
         }
         R.id.terrain_map -> {
+            mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN)
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -197,6 +201,7 @@ class SelectLocationFragment : BaseFragment() {
             }
         }
     }
+
     private fun getMyLocation() {
         isMyLocationSet = false
         mMap.setOnMyLocationChangeListener {
@@ -212,6 +217,7 @@ class SelectLocationFragment : BaseFragment() {
             }
         }
     }
+
     private fun moveCamera(latLng: LatLng, zoom: Float, title: String) {
         mMap.clear()
         Log.d(
@@ -239,6 +245,7 @@ class SelectLocationFragment : BaseFragment() {
             }
         })
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -281,10 +288,10 @@ class SelectLocationFragment : BaseFragment() {
 
     private fun startOperation() {
         binding.proceed.setOnClickListener {
-            var bundle=Bundle()
+            var bundle = Bundle()
             bundle.putDouble("latitude", userLocation.latitude)
             bundle.putDouble("longitude", userLocation.longitude)
-        //    findNavController().navigate(bundle)
+            //    findNavController().navigate(bundle)
         }
     }
 
