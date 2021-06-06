@@ -1,0 +1,132 @@
+{
+  "project_info": {
+    "project_number": "141246212110",
+    "project_id": "todorecall",
+    "storage_bucket": "todorecall.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141246212110:android:80dbfd4bc57c92f16ab45f",
+        "android_client_info": {
+          "package_name": "com.parita.todoreminder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "141246212110-8ffpran4ob05eul73h4brcbta64efehb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parita.todoreminder",
+            "certificate_hash": "045de8f6b3bdd0121eaf9f5c2f924f99d1e15b11"
+          }
+        },
+        {
+          "client_id": "141246212110-91e49aa6njpcgitd4gvsoam5l12vbvej.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parita.todoreminder",
+            "certificate_hash": "53e669115e37cafa109e18972a8cf6fafb5cbb19"
+          }
+        },
+        {
+          "client_id": "141246212110-d9mkdvusg4ado2ih3b5glk79ap44ltvv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parita.todoreminder",
+            "certificate_hash": "c1ef6a9e5c19539db8f42f15e2f44c5743b42be5"
+          }
+        },
+        {
+          "client_id": "141246212110-o6id9g4hnrnuutftmvoolclrcc2p9gr1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parita.todoreminder",
+            "certificate_hash": "c60c52bd79f6dcf6eebe2388081f7a42f835a259"
+          }
+        },
+        {
+          "client_id": "141246212110-d9f87gdppcppss32c0132fo8mqvepimg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvZBq-u1rv_Vhjdct5D6R3928QZDC-HbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "141246212110-d9f87gdppcppss32c0132fo8mqvepimg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141246212110:android:87c8ed526fea37d56ab45f",
+        "android_client_info": {
+          "package_name": "com.udacity.project4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "141246212110-0ntotgs1escuo67vigl8u3v7g8vnpo9n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udacity.project4",
+            "certificate_hash": "53e669115e37cafa109e18972a8cf6fafb5cbb19"
+          }
+        },
+        {
+          "client_id": "141246212110-fls1t0e0n5uo5auulcutmlcp1vvkcg29.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udacity.project4",
+            "certificate_hash": "c1ef6a9e5c19539db8f42f15e2f44c5743b42be5"
+          }
+        },
+        {
+          "client_id": "141246212110-ups8p6s8crqtdrq2nvd9cto837erthuo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udacity.project4",
+            "certificate_hash": "c60c52bd79f6dcf6eebe2388081f7a42f835a259"
+          }
+        },
+        {
+          "client_id": "141246212110-vgk9lr4e6n07h5tu4lgiovnlidacpmf2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udacity.project4",
+            "certificate_hash": "045de8f6b3bdd0121eaf9f5c2f924f99d1e15b11"
+          }
+        },
+        {
+          "client_id": "141246212110-d9f87gdppcppss32c0132fo8mqvepimg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvZBq-u1rv_Vhjdct5D6R3928QZDC-HbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "141246212110-d9f87gdppcppss32c0132fo8mqvepimg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
