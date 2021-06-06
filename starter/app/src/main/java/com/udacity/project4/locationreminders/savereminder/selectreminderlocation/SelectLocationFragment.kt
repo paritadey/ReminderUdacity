@@ -87,32 +87,31 @@ class SelectLocationFragment : BaseFragment() {
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
-
-//        TODO: add the map setup implementation
+        //add the map setup implementation
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(callback)
-//        TODO: zoom to the user location after taking his permission
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
-        fetchingUserLocation()
-
-//        TODO: call this function after the user confirms on the selected location
-        onLocationSelected()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (getRuntimePermissions()) {
-            startOperation()
-        } else {
-            Snackbar.make(
-                binding.root,
-                "Please allow all the permissions",
-                Snackbar.LENGTH_LONG
-            ).show()
+        //zoom to the user location after taking his permission
+        //add style to the map
+        //put a marker to location that the user selected
+        //call this function after the user confirms on the selected location
+        getRuntimePermissions()
+        binding.proceed.setOnClickListener {
+            if(getRuntimePermissions())
+                onLocationSelected()
+            else{
+                Snackbar.make(
+                    binding.root,
+                    "Please allow all the permissions",
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
@@ -133,15 +132,20 @@ class SelectLocationFragment : BaseFragment() {
                 ), REQUEST_CODE
             )
             return false
-        } else
+        } else {
+            fetchingUserLocation()
             return true
+        }
     }
 
 
     private fun onLocationSelected() {
-        //        TODO: When the user confirms on the selected location,
+        //        When the user confirms on the selected location,
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
+        _viewModel.latitude.value = userLocation.latitude
+        _viewModel.longitude.value = userLocation.longitude
+        findNavController().popBackStack()
     }
 
 
@@ -243,7 +247,7 @@ class SelectLocationFragment : BaseFragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE && permissions.size > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                startOperation()
+                fetchingUserLocation()
             } else {
                 val rational =
                     shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
