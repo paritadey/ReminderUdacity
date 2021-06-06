@@ -2,18 +2,24 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -29,6 +35,7 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
+import kotlinx.android.synthetic.main.activity_reminders.*
 import org.koin.android.ext.android.inject
 
 class SelectLocationFragment : BaseFragment() {
@@ -50,6 +57,7 @@ class SelectLocationFragment : BaseFragment() {
         var isMyLocationSet = false
     }
 
+    @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback {
         mMap = it
         if (ActivityCompat.checkSelfPermission(
@@ -95,6 +103,41 @@ class SelectLocationFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (getRuntimePermissions()) {
+            startOperation()
+        } else {
+            Snackbar.make(
+                binding.root,
+                "Please allow all the permissions",
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun getRuntimePermissions(): Boolean {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ), REQUEST_CODE
+            )
+            return false
+        } else
+            return true
+    }
+
+
     private fun onLocationSelected() {
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
@@ -123,6 +166,7 @@ class SelectLocationFragment : BaseFragment() {
         else -> super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("MissingPermission")
     private fun fetchingUserLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         fusedLocationClient.lastLocation.addOnSuccessListener {
@@ -191,4 +235,53 @@ class SelectLocationFragment : BaseFragment() {
             }
         })
     }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE && permissions.size > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                startOperation()
+            } else {
+                val rational =
+                    shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
+                        permissions[1]
+                    )
+                if (!rational) {
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Permission required!")
+                        .setMessage("This permission is essential to proceed further.")
+                        .setPositiveButton("OK", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                                val intent = Intent()
+                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                val uri: Uri =
+                                    Uri.fromParts("package", requireActivity().packageName, null)
+                                intent.data = uri
+                                startActivity(intent)
+                            }
+                        }).setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                                dialog?.dismiss()
+                            }
+
+                        }).show()
+                } else {
+                    getRuntimePermissions()
+                }
+            }
+        }
+    }
+
+    private fun startOperation() {
+        binding.proceed.setOnClickListener {
+            var bundle=Bundle()
+            bundle.putDouble("latitude", userLocation.latitude)
+            bundle.putDouble("longitude", userLocation.longitude)
+        //    findNavController().navigate(bundle)
+        }
+    }
+
 }
