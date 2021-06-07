@@ -12,10 +12,12 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -125,12 +127,22 @@ class SelectLocationFragment : BaseFragment() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ), REQUEST_CODE
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    ), REQUEST_CODE
+                )
+            } else {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ), REQUEST_CODE
+                )
+            }
             return false
         } else {
             fetchingUserLocation()

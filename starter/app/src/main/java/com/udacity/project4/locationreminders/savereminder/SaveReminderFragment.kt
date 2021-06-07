@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,10 +21,13 @@ import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSaveReminderBinding
+import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
+import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobIntentService
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+
 
 class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with the another fragment
@@ -81,7 +85,9 @@ class SaveReminderFragment : BaseFragment() {
                 longitude = longitude
             )
             _viewModel.validateAndSaveReminder(data)
-            setUpGeofence(data)
+            Handler().postDelayed({
+                setUpGeofence(data)
+            }, 2000)
         }
         _viewModel.longitude.observe(viewLifecycleOwner, Observer {
             binding.selectedLocation.append(" Latitude: $it ")
@@ -95,7 +101,7 @@ class SaveReminderFragment : BaseFragment() {
         geofenceList.add(
             Geofence.Builder()
                 .setRequestId(data.id)
-                .setCircularRegion(data.latitude?:0.0, data.longitude?:0.0, 100f)
+                .setCircularRegion(data.latitude ?: 0.0, data.longitude ?: 0.0, 100f)
                 .setExpirationDuration(45 * 60 * 1000)
                 .setLoiteringDelay(1000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
@@ -106,7 +112,7 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun initiateGeofenceRequest() {
         if (ActivityCompat.checkSelfPermission(
-                requireActivity(),
+                requireActivity() as RemindersActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -115,9 +121,11 @@ class SaveReminderFragment : BaseFragment() {
             geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
                 .addOnSuccessListener {
                     Log.d("TAG", "initiateGeofenceRequest: ")
+                    navigationCommand.value = NavigationCommand.Back
                 }
                 .addOnFailureListener {
-                    Log.d("TAG", "initiateGeofenceRequest: ")
+                    Log.d("TAG", "initiateGeofenceRequest: ${it.message}")
+                    navigationCommand.value = NavigationCommand.Back
                 }
         }
     }

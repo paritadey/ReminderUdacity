@@ -26,5 +26,9 @@ import org.junit.runner.RunWith
 class RemindersLocalRepositoryTest {
 
 //    TODO: Add testing implementation to the RemindersLocalRepository.kt
+    fun testGetReminders() {}
+    fun testSaveReminder() {}
+    fun testGetReminder() {}
+    fun testDeleteAllReminders() {}
 
 }
