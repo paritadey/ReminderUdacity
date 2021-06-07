@@ -8,13 +8,17 @@ import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
+import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.utils.sendNotification
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.coroutines.CoroutineContext
 
 
@@ -27,7 +31,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
     companion object {
         private const val JOB_ID = 573
 
-        //        TODO: call this to start the JobIntentService to handle the geofencing transition events
+        //        call this to start the JobIntentService to handle the geofencing transition events
         fun enqueueWork(context: Context, intent: Intent) {
             enqueueWork(
                 context,
@@ -38,9 +42,9 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
     }
 
     override fun onHandleWork(intent: Intent) {
-        //TODO: handle the geofencing transition events and
+        // handle the geofencing transition events and
         // send a notification to the user when he enters the geofence area
-        //TODO call @sendNotification
+        // call @sendNotification
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent.hasError()) {
             val errorMsg: String = getErrorString(geofencingEvent.errorCode)
@@ -49,7 +53,8 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         }
         val geoFenceTransition = geofencingEvent.geofenceTransition
         if (geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-            geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+            geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT
+        ) {
             val triggeringGeofences = geofencingEvent.triggeringGeofences
             val geofenceTransitionDetails: String =
                 getGeofenceTrasitionDetails(geoFenceTransition, triggeringGeofences)
@@ -57,7 +62,10 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         }
     }
 
-    private fun getGeofenceTrasitionDetails(geoFenceTransition: Int, triggeringGeofences: List<Geofence>): String {
+    private fun getGeofenceTrasitionDetails(
+        geoFenceTransition: Int,
+        triggeringGeofences: List<Geofence>
+    ): String {
         val triggeringGeofencesList: ArrayList<String?> = ArrayList()
         for (geofence in triggeringGeofences) {
             triggeringGeofencesList.add(geofence.requestId)
@@ -75,38 +83,17 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
     private fun sendNotification(triggeringGeofences: List<Geofence>) {
         sendNotification(
             this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                "reminderDTO.title",
-                "reminderDTO.description",
-                "reminderDTO.location",
-                22.587484,
-                88.6947,
-                "reminderDTO.id"
+                SaveReminderFragment.dataItem.title,
+                SaveReminderFragment.dataItem.description,
+                SaveReminderFragment.dataItem.location,
+                SaveReminderFragment.dataItem.latitude,
+                SaveReminderFragment.dataItem.longitude,
+                SaveReminderFragment.dataItem.id
             )
         )
-        val requestId = ""
-
-        //Get the local repository instance
-//        val remindersLocalRepository: RemindersLocalRepository by inject()
-//        Interaction to the repository has to be through a coroutine scope
-        /*CoroutineScope(coroutineContext).launch(SupervisorJob()) {
-            //get the reminder with the request id
-            val result = remindersLocalRepository.getReminder(requestId)
-            if (result is Result.Success<ReminderDTO>) {
-                val reminderDTO = result.data
-                //send a notification to the user with the reminder details
-                sendNotification(
-                    this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                        reminderDTO.title,
-                        reminderDTO.description,
-                        reminderDTO.location,
-                        reminderDTO.latitude,
-                        reminderDTO.longitude,
-                        reminderDTO.id
-                    )
-                )
-            }
-        }*/
     }
+
+
     private fun getErrorString(errorCode: Int): String {
         return when (errorCode) {
             GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE -> "GeoFence not available"
@@ -115,5 +102,4 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
             else -> "Unknown error."
         }
     }
-
 }

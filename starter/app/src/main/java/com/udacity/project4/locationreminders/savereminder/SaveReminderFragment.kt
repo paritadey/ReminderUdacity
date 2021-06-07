@@ -42,6 +42,9 @@ class SaveReminderFragment : BaseFragment() {
         PendingIntent.getBroadcast(requireActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
+    companion object{
+        lateinit var dataItem : ReminderDataItem
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,6 +87,7 @@ class SaveReminderFragment : BaseFragment() {
                 latitude = latitude,
                 longitude = longitude
             )
+            dataItem = data
             _viewModel.validateAndSaveReminder(data)
             Handler().postDelayed({
                 setUpGeofence(data)
