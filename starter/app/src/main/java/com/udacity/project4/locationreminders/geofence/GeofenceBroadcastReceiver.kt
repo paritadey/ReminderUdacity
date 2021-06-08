@@ -46,6 +46,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         } else {
             Log.e("TAG", "Error")
         }*/
+
         GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
     }
 }

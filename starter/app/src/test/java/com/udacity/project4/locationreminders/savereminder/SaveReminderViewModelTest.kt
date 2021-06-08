@@ -1,11 +1,13 @@
 package com.udacity.project4.locationreminders.savereminder
 
 import android.app.Application
+import android.service.autofill.Validators.not
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.internal.ContextUtils.getActivity
 import com.udacity.project4.locationreminders.TestCoroutineRule
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -26,6 +28,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -41,12 +44,12 @@ class SaveReminderViewModelTest {
     val testCoroutineRule = TestCoroutineRule()
 
     @Mock
-    private lateinit var dataSource: ReminderDataSource
+    lateinit var dataSource: ReminderDataSource
 
     @Mock
-    private lateinit var showLoading: Observer<Boolean>
+    lateinit var showLoading: Observer<Boolean>
     @Mock
-    private lateinit var tasksViewModel:SaveReminderViewModel
+    lateinit var tasksViewModel:SaveReminderViewModel
 
     @Before
     fun setupViewModel() {
@@ -69,5 +72,10 @@ class SaveReminderViewModelTest {
         }
 
     }
+    @Test
+    fun checkSnackBar(){
+
+    }
+
 
 }

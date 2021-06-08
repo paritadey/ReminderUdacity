@@ -5,20 +5,20 @@ import android.content.Intent
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.JobIntentService
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
-import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.data.local.RemindersDao
+import com.udacity.project4.locationreminders.data.local.RemindersDatabase
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
-import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
-import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.utils.sendNotification
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 
@@ -53,7 +53,8 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         }
         val geoFenceTransition = geofencingEvent.geofenceTransition
         if (geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-            geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT
+            geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ||
+            geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL
         ) {
             val triggeringGeofences = geofencingEvent.triggeringGeofences
             val geofenceTransitionDetails: String =
@@ -81,16 +82,42 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     //TODO: get the request id of the current geofence
     private fun sendNotification(triggeringGeofences: List<Geofence>) {
-        sendNotification(
-            this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                SaveReminderFragment.dataItem.title,
-                SaveReminderFragment.dataItem.description,
-                SaveReminderFragment.dataItem.location,
-                SaveReminderFragment.dataItem.latitude,
-                SaveReminderFragment.dataItem.longitude,
-                SaveReminderFragment.dataItem.id
-            )
-        )
+        val requestId = triggeringGeofences[0].requestId
+        Log.d("TAG", "sendNotification loading: $requestId")
+        CoroutineScope(coroutineContext).launch(SupervisorJob()) {
+            //get the reminder with the request id
+            try {
+                val result = RemindersDatabase.getDatabase(applicationContext).reminderDao().getReminderById(requestId) //.getReminderById(requestId)
+                Log.d("TAG", "sendNotification success: ${result?.title}")
+                if (result is ReminderDTO) {
+                    //send a notification to the user with the reminder details
+                    Log.d("TAG", "sendNotification inside: $requestId")
+                    sendNotification(
+                        this@GeofenceTransitionsJobIntentService, ReminderDataItem(
+                            result.title,
+                            result.description,
+                            result.location,
+                            result.latitude,
+                            result.longitude,
+                            result.id
+                        )
+                    )
+                }else{
+                    sendNotification(
+                        this@GeofenceTransitionsJobIntentService, ReminderDataItem(
+                            "No Data",
+                            "No Data",
+                            "No Data",
+                            0.0,
+                            0.0,
+                            "No Data"
+                        )
+                    )
+                }
+            }catch (e:Exception){
+                Log.d("TAG", "sendNotification failure: ${e.message}")
+            }
+        }
     }
 
 
