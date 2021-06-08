@@ -43,4 +43,6 @@ abstract class BaseFragment : Fragment() {
             }
         })
     }
+
+    abstract fun styleMap(mapTypeNormal: String)
 }

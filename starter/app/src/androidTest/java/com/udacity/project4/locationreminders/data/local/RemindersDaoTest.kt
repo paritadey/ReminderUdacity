@@ -22,15 +22,17 @@ import org.junit.Test
 @SmallTest
 class RemindersDaoTest {
 
-//    TODO: Add testing implementation to the RemindersDao.kt
-private lateinit var noteDatabase: RemindersDatabase
+    //    TODO: Add testing implementation to the RemindersDao.kt
+    private lateinit var noteDatabase: RemindersDatabase
+    private lateinit var dao: RemindersDao
 
     @Before
     fun initDb() {
         noteDatabase = Room.inMemoryDatabaseBuilder(
-            InstrumentationRegistry.getContext(),
+            ApplicationProvider.getApplicationContext(),
             RemindersDatabase::class.java
-        ).build()
+        ).allowMainThreadQueries().build()
+        dao = noteDatabase.reminderDao()
     }
 
     @After
@@ -47,11 +49,11 @@ private lateinit var noteDatabase: RemindersDatabase
     }
 
     @Test
-    suspend fun getNotesRetrieveData(){
+    suspend fun getNotesRetrieveData() {
         val notes = NoteFactory.makeNoteList(5)
         notes.forEach { noteDatabase.reminderDao().saveReminder(it) }
         val retrievedNotes = noteDatabase.reminderDao().getReminders()
-        assert(retrievedNotes == notes.sortedWith(compareBy({ it.id}, { it.id })))
+        assert(retrievedNotes == notes.sortedWith(compareBy({ it.id }, { it.id })))
     }
 
     @Test

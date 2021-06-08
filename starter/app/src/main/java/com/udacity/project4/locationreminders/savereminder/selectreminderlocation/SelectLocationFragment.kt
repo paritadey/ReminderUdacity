@@ -45,6 +45,76 @@ class SelectLocationFragment : BaseFragment() {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
+    override fun styleMap(mapType: String) {
+        when (mapType) {
+            "MAP_TYPE_NORMAL" -> {
+                try {
+                    val success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                            requireContext(),
+                            R.raw.normal
+                        )
+                    )
+
+                    if (!success) {
+                        Log.e("TAG", "Style parsing failed.")
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    Log.e("TAG", "Can't find style. Error: ", e)
+                }
+            }
+            "MAP_TYPE_HYBRID" -> {
+                try {
+                    val success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                            requireContext(),
+                            R.raw.hybrid
+                        )
+                    )
+
+                    if (!success) {
+                        Log.e("TAG", "Style parsing failed.")
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    Log.e("TAG", "Can't find style. Error: ", e)
+                }
+            }
+            "MAP_TYPE_SATELLITE" -> {
+                try {
+                    val success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                            requireContext(),
+                            R.raw.satelite
+                        )
+                    )
+
+                    if (!success) {
+                        Log.e("TAG", "Style parsing failed.")
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    Log.e("TAG", "Can't find style. Error: ", e)
+                }
+            }
+            "MAP_TYPE_TERRAIN" -> {
+                try {
+                    val success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                            requireContext(),
+                            R.raw.terrian
+                        )
+                    )
+
+                    if (!success) {
+                        Log.e("TAG", "Style parsing failed.")
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    Log.e("TAG", "Can't find style. Error: ", e)
+                }
+
+            }
+        }
+    }
+
     private lateinit var binding: FragmentSelectLocationBinding
 
     private lateinit var mMap: GoogleMap
@@ -117,6 +187,19 @@ class SelectLocationFragment : BaseFragment() {
         }
     }
 
+    private fun setPoiClick() {
+        mMap.setOnPoiClickListener { poi ->
+            val poiMarker = mMap.addMarker(
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
+            )
+            poiMarker.showInfoWindow()
+            userLocation.latitude = poiMarker.position.latitude
+            userLocation.longitude = poiMarker.position.longitude
+        }
+    }
+
     private fun getRuntimePermissions(): Boolean {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -168,19 +251,23 @@ class SelectLocationFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         // Change the map type based on the user's selection.
         R.id.normal_map -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
+            styleMap("MAP_TYPE_NORMAL")
+            // mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL)
             true
         }
         R.id.hybrid_map -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID)
+            styleMap("MAP_TYPE_HYBRID")
+            //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID)
             true
         }
         R.id.satellite_map -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE)
+            styleMap("MAP_TYPE_SATELLITE")
+            //  mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE)
             true
         }
         R.id.terrain_map -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN)
+            styleMap("MAP_TYPE_TERRAIN")
+            //mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN)
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -237,13 +324,14 @@ class SelectLocationFragment : BaseFragment() {
             "moveCamera: moving the camera to: lat: $latLng.latitude, lng: $latLng.longitude"
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
-        mMap.addMarker(
+       /* mMap.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .title(title)
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        )
+        )*/
+        setPoiClick()
         mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDragStart(marker: Marker) {}
             override fun onMarkerDrag(marker: Marker) {}
@@ -252,8 +340,9 @@ class SelectLocationFragment : BaseFragment() {
                     "TAG",
                     "onMarkerDragEnd: $marker.position.latitude,  $marker.position.longitude"
                 )
-                userLocation.latitude = marker.position.latitude
-                userLocation.longitude = marker.position.longitude
+                setPoiClick()
+               /* userLocation.latitude = marker.position.latitude
+                userLocation.longitude = marker.position.longitude*/
             }
         })
     }
