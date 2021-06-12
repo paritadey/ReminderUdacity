@@ -72,10 +72,6 @@ class SaveReminderViewModelTest {
         }
 
     }
-    @Test
-    fun checkSnackBar(){
-
-    }
 
 
 }

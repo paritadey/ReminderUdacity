@@ -1,15 +1,17 @@
 package com.udacity.project4
 
+import android.R
 import android.app.Application
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.google.android.material.internal.ContextUtils.getActivity
+import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
@@ -17,6 +19,7 @@ import com.udacity.project4.locationreminders.reminderslist.RemindersListViewMod
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,6 +29,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.get
+
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -74,11 +78,15 @@ class RemindersActivityTest :
     }
 
 
-//    TODO: add End to End testing to the app
+    //    TODO: add End to End testing to the app
     @Test
-    fun toastTest(){
-    onView(withText("Error occurred")).inRoot(withDecorView(not(getActivity(appContext)?.window?.getDecorView())))
-        .check(matches(isDisplayed()))
+    fun toastTest() {
+     /*   onView(withText("Error occurred")).inRoot(withDecorView(not(getActivity(appContext)?.window?.getDecorView())))
+            .check(matches(isDisplayed()))*/
+        onView(withText("is toast")).inRoot(ToastMatcher())
+            .check(matches(isDisplayed()))
+        onView(withText("toast")).inRoot(ToastMatcher())
+            .check(matches(not(isDisplayed())))
     }
 
 }

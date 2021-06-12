@@ -18,7 +18,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositoryTest
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragmentDirections
+import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -36,13 +41,6 @@ class ReminderListFragmentTest {
 //    TODO: test the displayed data on the UI.
 //    TODO: add testing for the error messages.
 
-    @Before
-    fun setUp() {
-        ActivityScenario.launch(RemindersActivity::class.java)
-            .onActivity { it.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.nav_host_fragment,ReminderListFragment())}
-    }
     @Test
     fun errorMessageTest(){
 
@@ -54,6 +52,39 @@ class ReminderListFragmentTest {
                     "Field cannot be left empty."
                 )
             )
+        )
+    }
+    @Test
+    fun clickTask_navigateToDetailFragmentOne() = runBlockingTest {
+
+        // GIVEN - On the home screen
+        val scenario = launchFragmentInContainer<SelectLocationFragment>(Bundle(), R.style.AppTheme)
+
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.view!!, navController)
+        }
+
+        // THEN - Verify that we navigate to the first detail screen
+        verify(navController).navigate(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
+        )
+    }
+
+    @Test
+    fun clickAddTaskButton_navigateToAddEditFragment() {
+        // GIVEN - On the home screen
+        val scenario = launchFragmentInContainer<SelectLocationFragment>(Bundle(), R.style.AppTheme)
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.view!!, navController)
+        }
+
+        // WHEN - Click on the "+" button
+        onView(withId(R.id.addReminderFAB)).perform(click())
+
+        // THEN - Verify that we navigate to the add screen
+        verify(navController).navigate(
+            SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
         )
     }
 
