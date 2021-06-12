@@ -57,4 +57,8 @@ class RemindersListViewModel(
     private fun invalidateShowNoData() {
         showNoData.value = remindersList.value == null || remindersList.value!!.isEmpty()
     }
+
+    fun getReminderList() : MutableLiveData<List<ReminderDataItem>>{
+        return remindersList
+    }
 }
