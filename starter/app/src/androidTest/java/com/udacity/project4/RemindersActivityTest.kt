@@ -15,6 +15,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
@@ -34,11 +35,15 @@ import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
+import com.udacity.project4.util.DataBindingIdlingResource
+import com.udacity.project4.util.monitorActivity
+import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.android.synthetic.main.activity_reminders.*
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -59,6 +64,7 @@ class RemindersActivityTest :
 
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
+    private val dataBindingIdlingResource = DataBindingIdlingResource()
 
     /**
      * As we use Koin as a Service Locator Library to develop our code, we'll also use Koin to test our code.
@@ -95,22 +101,29 @@ class RemindersActivityTest :
         runBlocking {
             repository.deleteAllReminders()
         }
-        ActivityScenario.launch(RemindersActivity::class.java)
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
         onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
     }
 
 
     //    TODO: add End to End testing to the app
     @Test
-    fun snackBarTest(){
+    fun snackBarTest() {
         onView(ViewMatchers.withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(matches(withText("Please enter title")))
     }
 
     @Test
     fun toastTest() {
-        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(ViewActions.typeText("Test"))
-        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderDescription)).perform(ViewActions.typeText("Description"))
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
+            ViewActions.typeText(
+                "Test"
+            )
+        )
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderDescription)).perform(
+            ViewActions.typeText("Description")
+        )
         onView(ViewMatchers.withId(com.udacity.project4.R.id.selectLocation)).perform(ViewActions.click())
         onView(isRoot()).perform(waitFor(5000))
         onView(ViewMatchers.withId(com.udacity.project4.R.id.proceed)).perform(ViewActions.click())
@@ -122,14 +135,18 @@ class RemindersActivityTest :
     }
 
     @Test
-    fun shouldReturnError(){
+    fun shouldReturnError() {
         onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(
             ViewAssertions.matches(
                 ViewMatchers.withText("Please enter title")
             )
         )
-        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(ViewActions.typeText("Test"))
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
+            ViewActions.typeText(
+                "Test"
+            )
+        )
         onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
         onView(isRoot()).perform(waitFor(8000))
         onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
@@ -149,4 +166,17 @@ class RemindersActivityTest :
             }
         }
     }
+
+    @Before
+    fun registerIdlingResource() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+    }
+
+    @After
+    fun unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+    }
+
 }
