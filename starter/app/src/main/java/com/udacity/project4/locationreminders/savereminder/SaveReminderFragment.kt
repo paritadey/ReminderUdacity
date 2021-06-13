@@ -1,22 +1,32 @@
 package com.udacity.project4.locationreminders.savereminder
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.PendingIntent
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -25,12 +35,15 @@ import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobIntentService
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 import java.util.*
 
 
 class SaveReminderFragment : BaseFragment() {
+    private val REQUEST_CODE = 200
+
     //Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()
     override fun styleMap(mapTypeNormal: String) {
@@ -47,9 +60,10 @@ class SaveReminderFragment : BaseFragment() {
         PendingIntent.getBroadcast(requireActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    companion object{
-        lateinit var dataItem : ReminderDataItem
+    companion object {
+        lateinit var dataItem: ReminderDataItem
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -88,7 +102,7 @@ class SaveReminderFragment : BaseFragment() {
             val data = ReminderDataItem(
                 title = title,
                 description = description,
-                location = if(latitude!=null && longitude!=null) "$latitude:$longitude" else "",
+                location = if (latitude != null && longitude != null) "$latitude:$longitude" else "",
                 latitude = latitude,
                 longitude = longitude
             )
@@ -98,7 +112,7 @@ class SaveReminderFragment : BaseFragment() {
                 setUpGeofence(data)
             }, 2000)
         }
-        _viewModel.longitude.observe(viewLifecycleOwner, Observer {
+        _viewModel.latitude.observe(viewLifecycleOwner, Observer {
             binding.selectedLocation.append(" Latitude: $it ")
         })
         _viewModel.longitude.observe(viewLifecycleOwner, Observer {
@@ -123,9 +137,13 @@ class SaveReminderFragment : BaseFragment() {
         if (ActivityCompat.checkSelfPermission(
                 requireActivity() as RemindersActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireActivity() as RemindersActivity,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            return
+            //return
+            getRuntimePermissions()
         } else {
             geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
                 .addOnSuccessListener {
@@ -151,4 +169,75 @@ class SaveReminderFragment : BaseFragment() {
         //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
     }
+
+    private fun getRuntimePermissions(): Boolean {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    ), REQUEST_CODE
+                )
+            } else {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ), REQUEST_CODE
+                )
+            }
+            return false
+        } else {
+            return true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE && permissions.size > 0) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                val rational =
+                    shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
+                        permissions[1]
+                    )
+                if (!rational) {
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Permission required!")
+                        .setMessage("This permission is essential to proceed further.")
+                        .setPositiveButton("OK", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                                val intent = Intent()
+                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                val uri: Uri =
+                                    Uri.fromParts("package", requireActivity().packageName, null)
+                                intent.data = uri
+                                startActivity(intent)
+                            }
+                        }).setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                                dialog?.dismiss()
+                            }
+
+                        }).show()
+                } else {
+                    getRuntimePermissions()
+                }
+            }
+        }
+    }
+
 }
