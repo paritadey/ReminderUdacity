@@ -1,63 +1,41 @@
 package com.udacity.project4.locationreminders.savereminder
 
-import android.app.Application
-import android.service.autofill.Validators.not
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.android.material.internal.ContextUtils.getActivity
-import com.udacity.project4.locationreminders.TestCoroutineRule
-import com.udacity.project4.locationreminders.data.ReminderDataSource
-import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
-import io.mockk.MockKAnnotations
-import junit.framework.Assert.assertNotNull
+import junit.framework.Assert.assertEquals
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
-import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
 class SaveReminderViewModelTest {
 
 
     //TODO: provide testing to the SaveReminderView and its live data objects
-    @Rule
-    @JvmField
-    val rule: TestRule = InstantTaskExecutorRule()
-
-    @Rule
-    val testCoroutineRule = TestCoroutineRule()
+    @Mock
+    var dataSource :FakeDataSource? =null
 
     @Mock
-    lateinit var dataSource: ReminderDataSource
+    var saveReminderViewModel: SaveReminderViewModel? =null
 
-    @Mock
-    lateinit var showLoading: Observer<Boolean>
-    @Mock
-    lateinit var tasksViewModel:SaveReminderViewModel
 
     @Before
-    fun setupViewModel() {
-         tasksViewModel = SaveReminderViewModel(ApplicationProvider.getApplicationContext(), dataSource)
+    fun setUpViewModel(){
+        saveReminderViewModel =
+            dataSource?.let {
+                SaveReminderViewModel(ApplicationProvider.getApplicationContext(),
+                    it
+                )
+            }
     }
 
     @Test
-    fun saveReminder_shouldReturnSuceess() {
+    fun check_loading(){
         val data = ReminderDataItem(
             "title",
             "description",
@@ -66,12 +44,24 @@ class SaveReminderViewModelTest {
             88.657,
             "id"
         )
-        testCoroutineRule.runBlockingTest {
-            tasksViewModel.validateAndSaveReminder(data)
-            tasksViewModel.showLoading.observeForever(showLoading)
-        }
-
+        saveReminderViewModel?.validateAndSaveReminder(data)
+        saveReminderViewModel?.showLoading?.observeForever{}
+        assertEquals(saveReminderViewModel?.showLoading?.value,null)
     }
 
+    @Test
+    fun shouldReturnError(){
+        val data = ReminderDataItem(
+            "title",
+            "description",
+            "location",
+            null,
+            null,
+            "id"
+        )
+        saveReminderViewModel?.validateAndSaveReminder(data)
+        saveReminderViewModel?.showLoading?.observeForever{}
+        assertEquals(saveReminderViewModel?.showErrorMessage?.value,null)
+    }
 
 }

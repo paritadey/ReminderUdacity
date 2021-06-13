@@ -88,7 +88,7 @@ class SaveReminderFragment : BaseFragment() {
             val data = ReminderDataItem(
                 title = title,
                 description = description,
-                location = "$latitude:$longitude",
+                location = if(latitude!=null && longitude!=null) "$latitude:$longitude" else "",
                 latitude = latitude,
                 longitude = longitude
             )
