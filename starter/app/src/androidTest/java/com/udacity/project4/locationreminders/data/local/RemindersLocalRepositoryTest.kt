@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -35,17 +36,21 @@ class RemindersLocalRepositoryTest {
 
     @Before
     fun createRepository() {
-        tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
-        // Get a reference to the class under test
-        tasksRepository = RemindersLocalRepository(
-            tasksLocalDataSource, Dispatchers.Unconfined
-        )
+        wrapEspressoIdlingResource{
+            tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
+            // Get a reference to the class under test
+            tasksRepository = RemindersLocalRepository(
+                tasksLocalDataSource, Dispatchers.Unconfined
+            )
+        }
     }
     @Test
     fun getTasks_requestsAllTasksFromRemoteDataSource() = runBlockingTest {
         // When tasks are requested from the tasks repository
-        val tasks = tasksRepository.getReminders() as Result.Success
-        assertThat(tasks.data, IsEqual(remoteTasks))
+        wrapEspressoIdlingResource {
+            val tasks = tasksRepository.getReminders() as Result.Success
+            assertThat(tasks.data, IsEqual(remoteTasks))
+        }
     }
 
 }

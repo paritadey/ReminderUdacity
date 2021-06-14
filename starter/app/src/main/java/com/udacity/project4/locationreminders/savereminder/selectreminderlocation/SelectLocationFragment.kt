@@ -5,12 +5,14 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +37,7 @@ import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
+import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import kotlinx.android.synthetic.main.activity_reminders.*
@@ -42,6 +45,8 @@ import kotlinx.android.synthetic.main.fragment_select_location.*
 import org.koin.android.ext.android.inject
 
 class SelectLocationFragment : BaseFragment() {
+
+    private lateinit var mLocationCallback: LocationCallback
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
@@ -228,7 +233,10 @@ class SelectLocationFragment : BaseFragment() {
             }
             return false
         } else {
-            fetchingUserLocation()
+            if(statusCheck())
+                fetchingUserLocation()
+            else
+                buildAlertMessageNoGps()
             return true
         }
     }
@@ -295,6 +303,7 @@ class SelectLocationFragment : BaseFragment() {
                         "Yours location is not retrieved! Try again.", Snackbar.LENGTH_LONG
                     ).setAction("Retry") {
                         getMyLocation()
+                        fetchLocation()
                     }.show()
                 }
             }
@@ -355,7 +364,10 @@ class SelectLocationFragment : BaseFragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE && permissions.size > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                fetchingUserLocation()
+                if(statusCheck())
+                    fetchingUserLocation()
+                else
+                    buildAlertMessageNoGps()
             } else {
                 val rational =
                     shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
@@ -395,5 +407,74 @@ class SelectLocationFragment : BaseFragment() {
             //    findNavController().navigate(bundle)
         }
     }
+    fun buildAlertMessageNoGps() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+            .setCancelable(false)
+            .setPositiveButton("Yes", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface?, id: Int) {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+            })
+            .setNegativeButton("No", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface, id: Int) {
+                    dialog.cancel()
+                }
+            })
+        val alert: AlertDialog = builder.create()
+        alert.show()
+    }
 
+    fun statusCheck(): Boolean {
+        val manager: LocationManager =
+            (requireActivity() as RemindersActivity).getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+    //Fetching current user location.
+    fun fetchLocation() {
+        val mLocationRequest = LocationRequest.create()
+        mLocationRequest.apply {
+            this.interval = 60000
+            this.fastestInterval = 5000
+            this.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+        mLocationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                Log.d(
+                    "TAG",
+                    "Latitude: ${locationResult.lastLocation.latitude} and Longitude: ${locationResult.lastLocation.longitude}"
+                )
+                try {
+                    setPoiClick()
+                    isMyLocationSet = true
+                    userLocation = locationResult.lastLocation
+                    Log.d("TAG", "current location ${locationResult.lastLocation.latitude} and latitude ${locationResult.lastLocation.longitude}")
+                    moveCamera(LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude), DEFAULT_ZOOM, "Location")
+                } catch (e: Exception) {
+                    Log.d("TAG", "Location: ${e.message}")
+                }
+                LocationServices.getFusedLocationProviderClient(requireActivity())
+                    .removeLocationUpdates(mLocationCallback)
+            }
+        }
+
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //In case location permission is not given.
+            return
+        }
+        LocationServices.getFusedLocationProviderClient(this.requireActivity())
+            .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchLocation()
+    }
 }

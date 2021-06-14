@@ -4,10 +4,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.PendingIntent
+import android.content.Context.LOCATION_SERVICE
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.google.android.gms.location.Geofence
@@ -84,8 +86,11 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         binding.selectLocation.setOnClickListener {
             //            Navigate to another fragment to get the user location
-            _viewModel.navigationCommand.value =
-                NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+            if (!statusCheck())
+                buildAlertMessageNoGps()
+            else
+                _viewModel.navigationCommand.value =
+                    NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
         }
 
         binding.saveReminder.setOnClickListener {
@@ -109,14 +114,30 @@ class SaveReminderFragment : BaseFragment() {
             dataItem = data
             _viewModel.validateAndSaveReminder(data)
             Handler().postDelayed({
-                setUpGeofence(data)
+                if (ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    getRuntimePermissions()
+                } else {
+                    setUpGeofence(data)
+                }
             }, 2000)
         }
         _viewModel.latitude.observe(viewLifecycleOwner, Observer {
-            binding.selectedLocation.append(" Latitude: $it ")
+            it?.let{
+                binding.selectedLocation.append(" Latitude: $it ")
+            }
         })
         _viewModel.longitude.observe(viewLifecycleOwner, Observer {
-            binding.selectedLocation.append(" Longitude: $it ")
+            it?.let{
+                binding.selectedLocation.append(" Longitude: $it ")
+            }
         })
     }
 
@@ -240,4 +261,27 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
+    fun buildAlertMessageNoGps() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+            .setCancelable(false)
+            .setPositiveButton("Yes", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface?, id: Int) {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+            })
+            .setNegativeButton("No", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface, id: Int) {
+                    dialog.cancel()
+                }
+            })
+        val alert: AlertDialog = builder.create()
+        alert.show()
+    }
+
+    fun statusCheck(): Boolean {
+        val manager: LocationManager =
+            (requireActivity() as RemindersActivity).getSystemService(LOCATION_SERVICE) as LocationManager
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
 }
