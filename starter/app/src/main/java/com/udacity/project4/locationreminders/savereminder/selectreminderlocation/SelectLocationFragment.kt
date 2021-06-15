@@ -130,7 +130,7 @@ class SelectLocationFragment : BaseFragment() {
                     if (statusCheck())
                         moveCamera(latLng, zoom, title)
                     else {
-                        getRuntimePermissions()
+                        enableLoc()
                     }
                 }
             }).setNegativeButton("POI", object : DialogInterface.OnClickListener {
@@ -138,7 +138,7 @@ class SelectLocationFragment : BaseFragment() {
                     if (statusCheck())
                         setPoiClick()
                     else {
-                        getRuntimePermissions()
+                        enableLoc()
                     }
                 }
 
@@ -211,7 +211,7 @@ class SelectLocationFragment : BaseFragment() {
         //call this function after the user confirms on the selected location
         getRuntimePermissions()
         binding.proceed.setOnClickListener {
-            if (getRuntimePermissions())
+            if (getRuntimePermissions() && statusCheck())
                 onLocationSelected()
             else {
                 Snackbar.make(
@@ -312,10 +312,18 @@ class SelectLocationFragment : BaseFragment() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    @SuppressLint("MissingPermission")
     private fun fetchingUserLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        fusedLocationClient.lastLocation.addOnSuccessListener {
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        } else {fusedLocationClient.lastLocation.addOnSuccessListener {
             if (it != null) {
                 try {
                     userLocation = it
@@ -340,7 +348,7 @@ class SelectLocationFragment : BaseFragment() {
                     ).setAction("Retry") {
                         getMyLocation()
                         fetchLocation()
-                    }.show()
+                    }.show()}
                 }
             }
         }
@@ -518,14 +526,24 @@ class SelectLocationFragment : BaseFragment() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             getRuntimePermissions()
+        } else {
+            LocationServices.getFusedLocationProviderClient(this.requireActivity())
+                .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
         }
-        LocationServices.getFusedLocationProviderClient(this.requireActivity())
-            .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
     }
 
     override fun onResume() {
         super.onResume()
-        //fetchLocation()
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fetchLocation()
+        }
     }
 
     private fun enableLoc() {
@@ -553,6 +571,7 @@ class SelectLocationFragment : BaseFragment() {
             val status: Status = result.status
             when (status.statusCode) {
                 LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
+                    if(isVisible)
                     status.startResolutionForResult(
                         requireActivity(),
                         SaveReminderFragment.REQUESTLOCATION
