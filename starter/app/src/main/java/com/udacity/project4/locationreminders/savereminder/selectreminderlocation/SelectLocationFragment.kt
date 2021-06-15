@@ -127,17 +127,17 @@ class SelectLocationFragment : BaseFragment() {
         builder.setMessage("Please choose loction adding method").setCancelable(false)
             .setPositiveButton("Marker", object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    if(getRuntimePermissions() && statusCheck())
-                        moveCamera(latLng,zoom, title)
-                    else{
+                    if (statusCheck())
+                        moveCamera(latLng, zoom, title)
+                    else {
                         getRuntimePermissions()
                     }
                 }
-            }).setNegativeButton("POI", object :DialogInterface.OnClickListener{
+            }).setNegativeButton("POI", object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    if(getRuntimePermissions() && statusCheck())
+                    if (statusCheck())
                         setPoiClick()
-                    else{
+                    else {
                         getRuntimePermissions()
                     }
                 }
@@ -321,7 +321,11 @@ class SelectLocationFragment : BaseFragment() {
                     userLocation = it
                     latitude = it.latitude.toString()
                     longitude = it.longitude.toString()
-                    askUserForMarkerOrPOI(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
+                    askUserForMarkerOrPOI(
+                        LatLng(it.latitude, it.longitude),
+                        DEFAULT_ZOOM,
+                        "My Location"
+                    )
                     //moveCamera(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
                 } catch (e: Exception) {
                     userLocation = Location("")
@@ -351,7 +355,11 @@ class SelectLocationFragment : BaseFragment() {
                 isMyLocationSet = true
                 userLocation = it
                 Log.d("TAG", "current location ${it.latitude} and latitude ${it.longitude}")
-                askUserForMarkerOrPOI(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
+                askUserForMarkerOrPOI(
+                    LatLng(it.latitude, it.longitude),
+                    DEFAULT_ZOOM,
+                    "My Location"
+                )
                 //  moveCamera(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "Location")
             } catch (e: Exception) {
                 Log.d("TAG", "Location: ${e.message}")
@@ -373,7 +381,7 @@ class SelectLocationFragment : BaseFragment() {
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         )
-       // setPoiClick()
+        // setPoiClick()
         mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDragStart(marker: Marker) {}
             override fun onMarkerDrag(marker: Marker) {}
@@ -382,9 +390,9 @@ class SelectLocationFragment : BaseFragment() {
                     "TAG",
                     "onMarkerDragEnd: $marker.position.latitude,  $marker.position.longitude"
                 )
-               // setPoiClick()
-                 userLocation.latitude = marker.position.latitude
-                 userLocation.longitude = marker.position.longitude
+                // setPoiClick()
+                userLocation.latitude = marker.position.latitude
+                userLocation.longitude = marker.position.longitude
             }
         })
     }
@@ -440,6 +448,7 @@ class SelectLocationFragment : BaseFragment() {
             //    findNavController().navigate(bundle)
         }
     }
+
     fun buildAlertMessageNoGps() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
         builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
@@ -495,7 +504,7 @@ class SelectLocationFragment : BaseFragment() {
                 } catch (e: Exception) {
                     Log.d("TAG", "Location: ${e.message}")
                 }
-                LocationServices.getFusedLocationProviderClient(requireActivity())
+                LocationServices.getFusedLocationProviderClient(requireActivity() as RemindersActivity)
                     .removeLocationUpdates(mLocationCallback)
             }
         }
@@ -516,8 +525,9 @@ class SelectLocationFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        fetchLocation()
+        //fetchLocation()
     }
+
     private fun enableLoc() {
         googleApiClient = GoogleApiClient.Builder(requireActivity())
             .addApi(LocationServices.API)
@@ -548,6 +558,7 @@ class SelectLocationFragment : BaseFragment() {
                         SaveReminderFragment.REQUESTLOCATION
                     )
                 } catch (e: IntentSender.SendIntentException) {
+                    Log.d("TAG", "error: ${e.message}")
                 }
             }
         }

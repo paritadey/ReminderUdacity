@@ -23,3 +23,7 @@ happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTrans
 ^app/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceBroadcastReceiver.kt,c\e\ceb11f023f5e8e4296620f533c66fabdb66b4fbc
 š
 japp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/RemindersLocalRepositoryTest.kt,8\7\87d05c5c479d0d955d3160910e71f8c72434d5c8
+Ž
+^app/src/main/java/com/udacity/project4/locationreminders/reminderslist/ReminderListFragment.kt,8\2\821e007eef0e1472577dcada944b46aba863b502
+k
+;app/src/main/java/com/udacity/project4/base/BaseFragment.kt,8\5\85f835aa61a137fc99bb772bd98f57fd91b7f22c

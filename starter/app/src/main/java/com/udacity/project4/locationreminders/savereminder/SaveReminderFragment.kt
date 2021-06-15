@@ -74,8 +74,12 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     override fun addGeofenceForClue() {
-        val title = _viewModel.reminderTitle.value
-        val description = _viewModel.reminderDescription.value
+        val title =
+            if (_viewModel.reminderTitle.value.isNullOrEmpty()) binding.reminderTitle.text.toString()
+                .trim() else _viewModel.reminderTitle.value
+        val description =
+            if (_viewModel.reminderDescription.value.isNullOrEmpty()) binding.reminderDescription.text.toString()
+                .trim() else _viewModel.reminderDescription.value
         val location = _viewModel.reminderSelectedLocationStr.value
         val latitude = _viewModel.latitude.value
         val longitude = _viewModel.longitude.value
@@ -102,7 +106,7 @@ class SaveReminderFragment : BaseFragment() {
     companion object {
         lateinit var dataItem: ReminderDataItem
         val REQUESTLOCATION = 199
-        var gpsStatus  = MutableLiveData<Boolean>()
+        var gpsStatus = MutableLiveData<Boolean>()
     }
 
     override fun onCreateView(
@@ -125,17 +129,16 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         binding.selectLocation.setOnClickListener {
             //            Navigate to another fragment to get the user location
-            if (!statusCheck()){
+            if (!statusCheck()) {
                 enableLoc()
-            }
-            else {
+            } else {
                 _viewModel.navigationCommand.value =
                     NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
             }
         }
 
         binding.saveReminder.setOnClickListener {
-
+            addGeofenceForClue()
 //            use the user entered reminder details to:
 //             1) add a geofencing request
 //             2) save the reminder to the local db
@@ -206,15 +209,19 @@ class SaveReminderFragment : BaseFragment() {
             //return
             getRuntimePermissions()
         } else {
-            geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
-                .addOnSuccessListener {
-                    Log.d("TAG", "initiateGeofenceRequest: ")
-                    navigationCommand.value = NavigationCommand.Back
-                }
-                .addOnFailureListener {
-                    Log.d("TAG", "initiateGeofenceRequest: ${it.message}")
-                    navigationCommand.value = NavigationCommand.Back
-                }
+            if (!binding.reminderTitle.text.isNullOrEmpty() && !binding.reminderDescription.text.isNullOrEmpty()) {
+                geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
+                    .addOnSuccessListener {
+                        Log.d("TAG", "initiateGeofenceRequest: ")
+                        navigationCommand.value = NavigationCommand.Back
+                    }
+                    .addOnFailureListener {
+                        Log.d("TAG", "initiateGeofenceRequest: ${it.message}")
+                        navigationCommand.value = NavigationCommand.Back
+                    }
+            } else {
+                Log.d("TAG", "title and description are empty")
+            }
         }
     }
 
@@ -504,6 +511,7 @@ class SaveReminderFragment : BaseFragment() {
                         REQUESTLOCATION
                     )
                 } catch (e: IntentSender.SendIntentException) {
+                    Log.d("TAG", "error: ${e.message}")
                 }
             }
         }
