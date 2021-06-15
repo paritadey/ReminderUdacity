@@ -26,6 +26,10 @@ class ReminderListFragment : BaseFragment() {
         TODO("Not yet implemented")
     }
 
+    override fun addGeofenceForClue() {
+        TODO("Not yet implemented")
+    }
+
     private lateinit var binding: FragmentRemindersBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

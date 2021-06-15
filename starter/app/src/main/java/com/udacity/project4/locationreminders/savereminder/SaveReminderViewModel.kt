@@ -1,7 +1,9 @@
 package com.udacity.project4.locationreminders.savereminder
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
@@ -12,8 +14,13 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import kotlinx.coroutines.launch
 
-class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSource) :
+class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSource, state: SavedStateHandle) :
     BaseViewModel(app) {
+    private val _geofenceIndex = state.getLiveData(GEOFENCE_INDEX_KEY, -1)
+    private val _hintIndex = state.getLiveData(HINT_INDEX_KEY, 0)
+    val geofenceIndex: LiveData<Int>
+        get() = _geofenceIndex
+
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
     val reminderSelectedLocationStr = MutableLiveData<String>()
@@ -79,4 +86,15 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         }
         return true
     }
+    fun updateHint(currentIndex: Int) {
+        _hintIndex.value = currentIndex+1
+    }
+
+    fun geofenceActivated() {
+        _geofenceIndex.value = _hintIndex.value
+    }
+    fun geofenceIsActive() =_geofenceIndex.value == _hintIndex.value
+    fun nextGeofenceIndex() = _hintIndex.value ?: 0
 }
+private const val HINT_INDEX_KEY = "hintIndex"
+private const val GEOFENCE_INDEX_KEY = "geofenceIndex"

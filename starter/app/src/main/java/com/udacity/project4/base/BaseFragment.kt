@@ -47,4 +47,5 @@ abstract class BaseFragment : Fragment() {
 
     abstract fun styleMap(mapTypeNormal: String)
     abstract fun askUserForMarkerOrPOI(latLng: LatLng, zoom: Float, title: String)
+    abstract fun addGeofenceForClue()
 }

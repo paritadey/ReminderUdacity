@@ -137,6 +137,10 @@ class SelectLocationFragment : BaseFragment() {
         alert.show()
     }
 
+    override fun addGeofenceForClue() {
+        TODO("Not yet implemented")
+    }
+
     private lateinit var binding: FragmentSelectLocationBinding
 
     private lateinit var mMap: GoogleMap
