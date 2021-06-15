@@ -25,8 +25,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.PendingResult
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
@@ -53,6 +57,7 @@ class SaveReminderFragment : BaseFragment() {
     private val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
     private val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
     private val LOCATION_PERMISSION_INDEX = 0
+    private var googleApiClient: GoogleApiClient? = null
 
 
     private val runningQOrLater =
@@ -96,6 +101,8 @@ class SaveReminderFragment : BaseFragment() {
 
     companion object {
         lateinit var dataItem: ReminderDataItem
+        val REQUESTLOCATION = 199
+        var gpsStatus  = MutableLiveData<Boolean>()
     }
 
     override fun onCreateView(
@@ -118,11 +125,13 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         binding.selectLocation.setOnClickListener {
             //            Navigate to another fragment to get the user location
-            if (!statusCheck())
-                buildAlertMessageNoGps()
-            else
+            if (!statusCheck()){
+                enableLoc()
+            }
+            else {
                 _viewModel.navigationCommand.value =
                     NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+            }
         }
 
         binding.saveReminder.setOnClickListener {
@@ -155,9 +164,8 @@ class SaveReminderFragment : BaseFragment() {
                 else {
                     Snackbar.make(binding.root, "Please check your location", Snackbar.LENGTH_SHORT)
                         .show()
-                    buildAlertMessageNoGps()
+//                    buildAlertMessageNoGps()
                 }
-
             }
         })
         _viewModel.longitude.observe(viewLifecycleOwner, Observer {
@@ -167,7 +175,7 @@ class SaveReminderFragment : BaseFragment() {
                 else {
                     Snackbar.make(binding.root, "Please check your location", Snackbar.LENGTH_SHORT)
                         .show()
-                    buildAlertMessageNoGps()
+//                    buildAlertMessageNoGps()
                 }
             }
         })
@@ -348,7 +356,6 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     private fun checkPermissionsAndStartGeofencing() {
-        if (_viewModel.geofenceIsActive()) return
         if (foregroundAndBackgroundLocationPermissionApproved()) {
             checkDeviceLocationSettingsAndStartGeofence()
         } else {
@@ -405,6 +412,7 @@ class SaveReminderFragment : BaseFragment() {
     fun statusCheck(): Boolean {
         val manager: LocationManager =
             (requireActivity() as RemindersActivity).getSystemService(LOCATION_SERVICE) as LocationManager
+        gpsStatus.value = manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
@@ -447,6 +455,7 @@ class SaveReminderFragment : BaseFragment() {
             }
         }
     }
+
     private fun removeGeofences() {
         if (!foregroundAndBackgroundLocationPermissionApproved()) {
             return
@@ -465,4 +474,38 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
+    private fun enableLoc() {
+        googleApiClient = GoogleApiClient.Builder(requireActivity())
+            .addApi(LocationServices.API)
+            .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
+                override fun onConnected(bundle: Bundle?) {}
+                override fun onConnectionSuspended(i: Int) {
+                    googleApiClient?.connect()
+                }
+            })
+            .addOnConnectionFailedListener {
+            }.build()
+        googleApiClient?.connect()
+        val locationRequest = LocationRequest.create()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 30 * 1000.toLong()
+        locationRequest.fastestInterval = 5 * 1000.toLong()
+        val builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)
+        val result: PendingResult<LocationSettingsResult> =
+            LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
+        result.setResultCallback { result ->
+            val status: Status = result.status
+            when (status.statusCode) {
+                LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
+                    status.startResolutionForResult(
+                        requireActivity(),
+                        REQUESTLOCATION
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                }
+            }
+        }
+    }
 }

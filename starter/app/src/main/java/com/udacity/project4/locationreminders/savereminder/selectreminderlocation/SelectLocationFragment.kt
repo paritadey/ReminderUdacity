@@ -24,8 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.common.api.*
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -38,6 +37,7 @@ import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import kotlinx.android.synthetic.main.activity_reminders.*
@@ -47,6 +47,8 @@ import org.koin.android.ext.android.inject
 class SelectLocationFragment : BaseFragment() {
 
     private lateinit var mLocationCallback: LocationCallback
+    private var googleApiClient: GoogleApiClient? = null
+
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
@@ -125,11 +127,19 @@ class SelectLocationFragment : BaseFragment() {
         builder.setMessage("Please choose loction adding method").setCancelable(false)
             .setPositiveButton("Marker", object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    moveCamera(latLng,zoom, title)
+                    if(getRuntimePermissions() && statusCheck())
+                        moveCamera(latLng,zoom, title)
+                    else{
+                        getRuntimePermissions()
+                    }
                 }
             }).setNegativeButton("POI", object :DialogInterface.OnClickListener{
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    setPoiClick()
+                    if(getRuntimePermissions() && statusCheck())
+                        setPoiClick()
+                    else{
+                        getRuntimePermissions()
+                    }
                 }
 
             })
@@ -257,7 +267,7 @@ class SelectLocationFragment : BaseFragment() {
             if (statusCheck())
                 fetchingUserLocation()
             else
-                buildAlertMessageNoGps()
+                enableLoc()
             return true
         }
     }
@@ -390,7 +400,7 @@ class SelectLocationFragment : BaseFragment() {
                 if (statusCheck())
                     fetchingUserLocation()
                 else
-                    buildAlertMessageNoGps()
+                    enableLoc()
             } else {
                 val rational =
                     shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
@@ -498,8 +508,7 @@ class SelectLocationFragment : BaseFragment() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            //In case location permission is not given.
-            return
+            getRuntimePermissions()
         }
         LocationServices.getFusedLocationProviderClient(this.requireActivity())
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
@@ -508,5 +517,39 @@ class SelectLocationFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         fetchLocation()
+    }
+    private fun enableLoc() {
+        googleApiClient = GoogleApiClient.Builder(requireActivity())
+            .addApi(LocationServices.API)
+            .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
+                override fun onConnected(bundle: Bundle?) {}
+                override fun onConnectionSuspended(i: Int) {
+                    googleApiClient?.connect()
+                }
+            })
+            .addOnConnectionFailedListener {
+            }.build()
+        googleApiClient?.connect()
+        val locationRequest = LocationRequest.create()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 30 * 1000.toLong()
+        locationRequest.fastestInterval = 5 * 1000.toLong()
+        val builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)
+        val result: PendingResult<LocationSettingsResult> =
+            LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
+        result.setResultCallback { result ->
+            val status: Status = result.status
+            when (status.statusCode) {
+                LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
+                    status.startResolutionForResult(
+                        requireActivity(),
+                        SaveReminderFragment.REQUESTLOCATION
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                }
+            }
+        }
     }
 }
