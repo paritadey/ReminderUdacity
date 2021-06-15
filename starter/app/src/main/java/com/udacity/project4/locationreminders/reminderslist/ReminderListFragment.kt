@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
@@ -18,6 +19,10 @@ class ReminderListFragment : BaseFragment() {
     //use Koin to retrieve the ViewModel instance
     override val _viewModel: RemindersListViewModel by viewModel()
     override fun styleMap(mapTypeNormal: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun askUserForMarkerOrPOI(latLng: LatLng, zoom: Float, title: String) {
         TODO("Not yet implemented")
     }
 

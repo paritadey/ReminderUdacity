@@ -52,6 +52,11 @@ class SaveReminderFragment : BaseFragment() {
         TODO("Not yet implemented")
     }
 
+    override fun askUserForMarkerOrPOI(latLng: LatLng, zoom: Float, title: String) {
+        TODO("Not yet implemented")
+    }
+
+
     private lateinit var binding: FragmentSaveReminderBinding
     lateinit var geofencingClient: GeofencingClient
     val geofenceList = arrayListOf<Geofence>()

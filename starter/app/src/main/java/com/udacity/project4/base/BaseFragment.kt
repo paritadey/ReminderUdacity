@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.utils.SingleLiveEvent
 
@@ -45,4 +46,5 @@ abstract class BaseFragment : Fragment() {
     }
 
     abstract fun styleMap(mapTypeNormal: String)
+    abstract fun askUserForMarkerOrPOI(latLng: LatLng, zoom: Float, title: String)
 }

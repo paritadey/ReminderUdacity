@@ -120,6 +120,23 @@ class SelectLocationFragment : BaseFragment() {
         }
     }
 
+    override fun askUserForMarkerOrPOI(latLng: LatLng, zoom: Float, title: String) {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
+        builder.setMessage("Please choose loction adding method").setCancelable(false)
+            .setPositiveButton("Marker", object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface?, which: Int) {
+                    moveCamera(latLng,zoom, title)
+                }
+            }).setNegativeButton("POI", object :DialogInterface.OnClickListener{
+                override fun onClick(dialog: DialogInterface?, which: Int) {
+                    setPoiClick()
+                }
+
+            })
+        val alert: AlertDialog = builder.create()
+        alert.show()
+    }
+
     private lateinit var binding: FragmentSelectLocationBinding
 
     private lateinit var mMap: GoogleMap
@@ -233,7 +250,7 @@ class SelectLocationFragment : BaseFragment() {
             }
             return false
         } else {
-            if(statusCheck())
+            if (statusCheck())
                 fetchingUserLocation()
             else
                 buildAlertMessageNoGps()
@@ -290,7 +307,8 @@ class SelectLocationFragment : BaseFragment() {
                     userLocation = it
                     latitude = it.latitude.toString()
                     longitude = it.longitude.toString()
-                    moveCamera(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
+                    askUserForMarkerOrPOI(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
+                    //moveCamera(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
                 } catch (e: Exception) {
                     userLocation = Location("")
                     Log.d("TAG", "Location error ${e.message}")
@@ -319,7 +337,8 @@ class SelectLocationFragment : BaseFragment() {
                 isMyLocationSet = true
                 userLocation = it
                 Log.d("TAG", "current location ${it.latitude} and latitude ${it.longitude}")
-                moveCamera(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "Location")
+                askUserForMarkerOrPOI(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "My Location")
+                //  moveCamera(LatLng(it.latitude, it.longitude), DEFAULT_ZOOM, "Location")
             } catch (e: Exception) {
                 Log.d("TAG", "Location: ${e.message}")
             }
@@ -333,14 +352,14 @@ class SelectLocationFragment : BaseFragment() {
             "moveCamera: moving the camera to: lat: $latLng.latitude, lng: $latLng.longitude"
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
-       /* mMap.addMarker(
+        mMap.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .title(title)
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        )*/
-        setPoiClick()
+        )
+       // setPoiClick()
         mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDragStart(marker: Marker) {}
             override fun onMarkerDrag(marker: Marker) {}
@@ -349,9 +368,9 @@ class SelectLocationFragment : BaseFragment() {
                     "TAG",
                     "onMarkerDragEnd: $marker.position.latitude,  $marker.position.longitude"
                 )
-                setPoiClick()
-               /* userLocation.latitude = marker.position.latitude
-                userLocation.longitude = marker.position.longitude*/
+               // setPoiClick()
+                 userLocation.latitude = marker.position.latitude
+                 userLocation.longitude = marker.position.longitude
             }
         })
     }
@@ -364,7 +383,7 @@ class SelectLocationFragment : BaseFragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE && permissions.size > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                if(statusCheck())
+                if (statusCheck())
                     fetchingUserLocation()
                 else
                     buildAlertMessageNoGps()
@@ -430,6 +449,7 @@ class SelectLocationFragment : BaseFragment() {
             (requireActivity() as RemindersActivity).getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
+
     //Fetching current user location.
     fun fetchLocation() {
         val mLocationRequest = LocationRequest.create()
@@ -448,8 +468,16 @@ class SelectLocationFragment : BaseFragment() {
                     setPoiClick()
                     isMyLocationSet = true
                     userLocation = locationResult.lastLocation
-                    Log.d("TAG", "current location ${locationResult.lastLocation.latitude} and latitude ${locationResult.lastLocation.longitude}")
-                    moveCamera(LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude), DEFAULT_ZOOM, "Location")
+                    Log.d(
+                        "TAG",
+                        "current location ${locationResult.lastLocation.latitude} and latitude ${locationResult.lastLocation.longitude}"
+                    )
+                    moveCamera(
+                        LatLng(
+                            locationResult.lastLocation.latitude,
+                            locationResult.lastLocation.longitude
+                        ), DEFAULT_ZOOM, "Location"
+                    )
                 } catch (e: Exception) {
                     Log.d("TAG", "Location: ${e.message}")
                 }
