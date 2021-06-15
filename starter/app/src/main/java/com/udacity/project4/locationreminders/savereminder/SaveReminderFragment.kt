@@ -39,6 +39,7 @@ import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobInt
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
+import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import java.util.*
 
@@ -135,13 +136,26 @@ class SaveReminderFragment : BaseFragment() {
             }, 2000)
         }
         _viewModel.latitude.observe(viewLifecycleOwner, Observer {
-            it?.let{
-                binding.selectedLocation.append(" Latitude: $it ")
+            it?.let {
+                if (getRuntimePermissions())
+                    binding.selectedLocation.append(" Latitude: $it ")
+                else {
+                    Snackbar.make(binding.root, "Please check your location", Snackbar.LENGTH_SHORT)
+                        .show()
+                    buildAlertMessageNoGps()
+                }
+
             }
         })
         _viewModel.longitude.observe(viewLifecycleOwner, Observer {
-            it?.let{
-                binding.selectedLocation.append(" Longitude: $it ")
+            it?.let {
+                if (getRuntimePermissions())
+                    binding.selectedLocation.append(" Longitude: $it ")
+                else {
+                    Snackbar.make(binding.root, "Please check your location", Snackbar.LENGTH_SHORT)
+                        .show()
+                    buildAlertMessageNoGps()
+                }
             }
         })
     }

@@ -17,3 +17,9 @@ v
 Fapp/src/main/java/com/udacity/project4/utils/EspressoIdlingResource.kt,2\2\22cee300f248bf74de57b52e50248720ec21d81a
 
 Oapp/src/androidTest/java/com/udacity/project4/util/DataBindingIdlingResource.kt,e\6\e67a73c78a010a94bbee41d11aa85a42c1a63d05
+˜
+happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTransitionsJobIntentService.kt,f\d\fd8084b1177a2300473d2a0983c748d230f964bc
+Ž
+^app/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceBroadcastReceiver.kt,c\e\ceb11f023f5e8e4296620f533c66fabdb66b4fbc
+š
+japp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/RemindersLocalRepositoryTest.kt,8\7\87d05c5c479d0d955d3160910e71f8c72434d5c8
