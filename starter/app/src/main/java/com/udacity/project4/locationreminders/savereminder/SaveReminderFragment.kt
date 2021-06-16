@@ -80,13 +80,13 @@ class SaveReminderFragment : BaseFragment() {
         val description =
             if (_viewModel.reminderDescription.value.isNullOrEmpty()) binding.reminderDescription.text.toString()
                 .trim() else _viewModel.reminderDescription.value
-        val location = _viewModel.reminderSelectedLocationStr.value
         val latitude = _viewModel.latitude.value
         val longitude = _viewModel.longitude.value
+        val location = if (latitude != null && longitude != null) "$latitude:$longitude" else ""
         dataItem = ReminderDataItem(
             title = title,
             description = description,
-            location = if (latitude != null && longitude != null) "$latitude:$longitude" else "",
+            location = location,
             latitude = latitude,
             longitude = longitude
         )
@@ -138,13 +138,14 @@ class SaveReminderFragment : BaseFragment() {
         }
 
         binding.saveReminder.setOnClickListener {
-            addGeofenceForClue()
+
 //            use the user entered reminder details to:
 //             1) add a geofencing request
 //             2) save the reminder to the local db
-
+            checkPermissionsAndStartGeofencing()
+            setUpGeofence(dataItem)
             _viewModel.validateAndSaveReminder(dataItem)
-            Handler().postDelayed({
+            /*Handler().postDelayed({
                 if (ContextCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -156,9 +157,12 @@ class SaveReminderFragment : BaseFragment() {
                 ) {
                     getRuntimePermissions()
                 } else {
-                    setUpGeofence(dataItem)
+                    if(statusCheck()) //Check for gps is on or off
+                        setUpGeofence(dataItem)
+                    else
+                        enableLoc()//Enable location
                 }
-            }, 2000)
+            }, 2000)*/
         }
         _viewModel.latitude.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -194,11 +198,27 @@ class SaveReminderFragment : BaseFragment() {
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
                 .build()
         )
+        checkPermissionsAndStartGeofencing()
         initiateGeofenceRequest()
     }
 
+    @SuppressLint("MissingPermission")
     private fun initiateGeofenceRequest() {
-        if (ActivityCompat.checkSelfPermission(
+        checkPermissionsAndStartGeofencing()
+        if (!binding.reminderTitle.text.isNullOrEmpty() && !binding.reminderDescription.text.isNullOrEmpty()) {
+            geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
+                .addOnSuccessListener {
+                    Log.d("TAG", "initiateGeofenceRequest: ")
+                    navigationCommand.value = NavigationCommand.Back
+                }
+                .addOnFailureListener {
+                    Log.d("TAG", "initiateGeofenceRequest: ${it.message}")
+                    navigationCommand.value = NavigationCommand.Back
+                }
+        } else {
+            Log.d("TAG", "title and description are empty")
+        }
+        /*if (ActivityCompat.checkSelfPermission(
                 requireActivity() as RemindersActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -222,7 +242,7 @@ class SaveReminderFragment : BaseFragment() {
             } else {
                 Log.d("TAG", "title and description are empty")
             }
-        }
+        }*/
     }
 
     private fun getGeofencingRequest(): GeofencingRequest {
@@ -284,7 +304,7 @@ class SaveReminderFragment : BaseFragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE && permissions.size > 0) {
+        if (requestCode == REQUEST_CODE && permissions.isNotEmpty()) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                 val rational =
                     shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(

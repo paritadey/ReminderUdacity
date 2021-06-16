@@ -512,7 +512,8 @@ class SelectLocationFragment : BaseFragment() {
                 } catch (e: Exception) {
                     Log.d("TAG", "Location: ${e.message}")
                 }
-                LocationServices.getFusedLocationProviderClient(requireActivity() as RemindersActivity)
+                if(isVisible)
+                    LocationServices.getFusedLocationProviderClient(requireActivity() as RemindersActivity)
                     .removeLocationUpdates(mLocationCallback)
             }
         }
@@ -544,6 +545,12 @@ class SelectLocationFragment : BaseFragment() {
         ) {
             fetchLocation()
         }
+    }
+
+    override fun onDestroyView() {
+        LocationServices.getFusedLocationProviderClient(requireActivity() as RemindersActivity)
+            .removeLocationUpdates(mLocationCallback)
+        super.onDestroyView()
     }
 
     private fun enableLoc() {
