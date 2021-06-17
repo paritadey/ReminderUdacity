@@ -90,6 +90,8 @@ class SaveReminderFragment : BaseFragment() {
             latitude = latitude,
             longitude = longitude
         )
+        setUpGeofence(dataItem)
+        _viewModel.validateAndSaveReminder(dataItem)
     }
 
 
@@ -143,26 +145,8 @@ class SaveReminderFragment : BaseFragment() {
 //             1) add a geofencing request
 //             2) save the reminder to the local db
             checkPermissionsAndStartGeofencing()
-            setUpGeofence(dataItem)
-            _viewModel.validateAndSaveReminder(dataItem)
-            /*Handler().postDelayed({
-                if (ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    getRuntimePermissions()
-                } else {
-                    if(statusCheck()) //Check for gps is on or off
-                        setUpGeofence(dataItem)
-                    else
-                        enableLoc()//Enable location
-                }
-            }, 2000)*/
+            /*setUpGeofence(dataItem)
+            _viewModel.validateAndSaveReminder(dataItem)*/
         }
         _viewModel.latitude.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -198,7 +182,7 @@ class SaveReminderFragment : BaseFragment() {
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
                 .build()
         )
-        checkPermissionsAndStartGeofencing()
+        // checkPermissionsAndStartGeofencing()
         initiateGeofenceRequest()
     }
 
@@ -218,31 +202,6 @@ class SaveReminderFragment : BaseFragment() {
         } else {
             Log.d("TAG", "title and description are empty")
         }
-        /*if (ActivityCompat.checkSelfPermission(
-                requireActivity() as RemindersActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireActivity() as RemindersActivity,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //return
-            getRuntimePermissions()
-        } else {
-            if (!binding.reminderTitle.text.isNullOrEmpty() && !binding.reminderDescription.text.isNullOrEmpty()) {
-                geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
-                    .addOnSuccessListener {
-                        Log.d("TAG", "initiateGeofenceRequest: ")
-                        navigationCommand.value = NavigationCommand.Back
-                    }
-                    .addOnFailureListener {
-                        Log.d("TAG", "initiateGeofenceRequest: ${it.message}")
-                        navigationCommand.value = NavigationCommand.Back
-                    }
-            } else {
-                Log.d("TAG", "title and description are empty")
-            }
-        }*/
     }
 
     private fun getGeofencingRequest(): GeofencingRequest {
@@ -378,10 +337,12 @@ class SaveReminderFragment : BaseFragment() {
         alert.show()
     }
 
+/*
     override fun onStart() {
         super.onStart()
         checkPermissionsAndStartGeofencing()
     }
+*/
 
     private fun checkPermissionsAndStartGeofencing() {
         if (foregroundAndBackgroundLocationPermissionApproved()) {
