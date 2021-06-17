@@ -188,7 +188,6 @@ class SaveReminderFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun initiateGeofenceRequest() {
-        checkPermissionsAndStartGeofencing()
         if (!binding.reminderTitle.text.isNullOrEmpty() && !binding.reminderDescription.text.isNullOrEmpty()) {
             geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
                 .addOnSuccessListener {
