@@ -30,6 +30,7 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragmentDirections
 import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
+import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matcher
@@ -73,20 +74,23 @@ class ReminderListFragmentTest {
 
     @Test
     fun fragment_navigation() {
-        // GIVEN - On the home screen
-        val scenario = launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
-        val navController = mock(NavController::class.java)
-        scenario.onFragment {
-            Navigation.setViewNavController(it.view!!, navController)
+        EspressoIdlingResource.wrapEspressoIdlingResource {
+            // GIVEN - On the home screen
+            val scenario =
+                launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
+            val navController = mock(NavController::class.java)
+            scenario.onFragment {
+                Navigation.setViewNavController(it.view!!, navController)
+            }
+
+            // WHEN - Click on the "+" button
+            onView(withId(R.id.selectLocation)).perform(click())
+
+            // THEN - Verify that we navigate to the add screen
+            verify(navController).navigate(
+                SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
+            )
         }
-
-        // WHEN - Click on the "+" button
-        onView(withId(R.id.selectLocation)).perform(click())
-
-        // THEN - Verify that we navigate to the add screen
-        verify(navController).navigate(
-            SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
-        )
     }
 
 

@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.savereminder
 import androidx.test.core.app.ApplicationProvider
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.EspressoIdlingResource
 import junit.framework.Assert.assertEquals
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,32 +37,35 @@ class SaveReminderViewModelTest {
 
     @Test
     fun check_loading(){
-        val data = ReminderDataItem(
-            "title",
-            "description",
-            "location",
-            22.8869,
-            88.657,
-            "id"
-        )
-        saveReminderViewModel?.validateAndSaveReminder(data)
-        saveReminderViewModel?.showLoading?.observeForever{}
-        assertEquals(saveReminderViewModel?.showLoading?.value,null)
+        EspressoIdlingResource.wrapEspressoIdlingResource {
+            val data = ReminderDataItem(
+                "title",
+                "description",
+                "location",
+                22.8869,
+                88.657,
+                "id"
+            )
+            saveReminderViewModel?.validateAndSaveReminder(data)
+            saveReminderViewModel?.showLoading?.observeForever {}
+            assertEquals(saveReminderViewModel?.showLoading?.value, null)
+        }
     }
 
     @Test
-    fun shouldReturnError(){
-        val data = ReminderDataItem(
-            "title",
-            "description",
-            "location",
-            null,
-            null,
-            "id"
-        )
-        saveReminderViewModel?.validateAndSaveReminder(data)
-        saveReminderViewModel?.showLoading?.observeForever{}
-        assertEquals(saveReminderViewModel?.showErrorMessage?.value,null)
+    fun shouldReturnError() {
+        EspressoIdlingResource.wrapEspressoIdlingResource {
+            val data = ReminderDataItem(
+                "title",
+                "description",
+                "location",
+                null,
+                null,
+                "id"
+            )
+            saveReminderViewModel?.validateAndSaveReminder(data)
+            saveReminderViewModel?.showLoading?.observeForever {}
+            assertEquals(saveReminderViewModel?.showErrorMessage?.value, null)
+        }
     }
-
 }

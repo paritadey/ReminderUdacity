@@ -11,6 +11,7 @@ import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.RemindersDao
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -74,15 +75,17 @@ class RemindersListViewModelTest {
     }
 
     private fun insertNote() {
-        fakeDataSource = FakeDataSource(MutableList<ReminderDTO>(5) {
-            data
-        })
-        reminderListViewModel = RemindersListViewModel(
-            ApplicationProvider.getApplicationContext(),
-            fakeDataSource!!
-        )
-        runBlockingTest {
-            reminderRepository.saveReminder(data)
+        EspressoIdlingResource.wrapEspressoIdlingResource {
+            fakeDataSource = FakeDataSource(MutableList<ReminderDTO>(5) {
+                data
+            })
+            reminderListViewModel = RemindersListViewModel(
+                ApplicationProvider.getApplicationContext(),
+                fakeDataSource!!
+            )
+            runBlockingTest {
+                reminderRepository.saveReminder(data)
+            }
         }
     }
 
@@ -99,10 +102,12 @@ class RemindersListViewModelTest {
 
     @Test
     fun testFetchDataSuccess() {
-        runBlockingTest {
-            Mockito.`when`(
-                viewModel?.loadReminders()
-            ).thenReturn(null)
+        EspressoIdlingResource.wrapEspressoIdlingResource {
+            runBlockingTest {
+                Mockito.`when`(
+                    viewModel?.loadReminders()
+                ).thenReturn(null)
+            }
         }
     }
 

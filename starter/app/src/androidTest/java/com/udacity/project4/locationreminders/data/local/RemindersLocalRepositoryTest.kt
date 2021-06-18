@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 @MediumTest
 class RemindersLocalRepositoryTest {
 
-    //    TODO: Add testing implementation to the RemindersLocalRepository.kt
+    //    Add testing implementation to the RemindersLocalRepository.kt
     private val task1 =
         ReminderDTO("Title1", "Description1", "location1", 22.578, 88.6548, "ID1")
     private val task2 =
@@ -53,4 +53,8 @@ class RemindersLocalRepositoryTest {
         }
     }
 
+    @Test
+    fun checkDataError() = runBlockingTest {
+        
+    }
 }

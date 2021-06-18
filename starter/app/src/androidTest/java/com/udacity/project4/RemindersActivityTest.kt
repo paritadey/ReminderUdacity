@@ -136,25 +136,27 @@ class RemindersActivityTest :
 
     @Test
     fun shouldReturnError() {
-        onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
-        onView(withId(com.google.android.material.R.id.snackbar_text)).check(
-            ViewAssertions.matches(
-                ViewMatchers.withText("Please enter title")
+        EspressoIdlingResource.wrapEspressoIdlingResource {
+            onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
+            onView(withId(com.google.android.material.R.id.snackbar_text)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText("Please enter title")
+                )
             )
-        )
-        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
-            ViewActions.typeText(
-                "Test"
+            onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
+                ViewActions.typeText(
+                    "Test"
+                )
             )
-        )
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
-        onView(isRoot()).perform(waitFor(8000))
-        onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
-        onView(withId(com.google.android.material.R.id.snackbar_text)).check(
-            ViewAssertions.matches(
-                ViewMatchers.withText("Please select location")
+            onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
+            onView(isRoot()).perform(waitFor(8000))
+            onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
+            onView(withId(com.google.android.material.R.id.snackbar_text)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText("Please select location")
+                )
             )
-        )
+        }
     }
 
     fun waitFor(delay: Long): ViewAction? {
