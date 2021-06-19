@@ -1,6 +1,4 @@
 
-}
-Mapp/src/main/java/com/udacity/project4/locationreminders/RemindersActivity.kt,8\a\8a08a10ab44beba1a7a98f6d75e043f21bc36294
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 <
