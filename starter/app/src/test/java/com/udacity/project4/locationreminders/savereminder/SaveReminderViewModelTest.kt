@@ -19,53 +19,50 @@ class SaveReminderViewModelTest {
 
     //TODO: provide testing to the SaveReminderView and its live data objects
     @Mock
-    var dataSource :FakeDataSource? =null
+    var dataSource: FakeDataSource? = null
 
     @Mock
-    var saveReminderViewModel: SaveReminderViewModel? =null
+    var saveReminderViewModel: SaveReminderViewModel? = null
 
 
     @Before
-    fun setUpViewModel(){
+    fun setUpViewModel() {
         saveReminderViewModel =
             dataSource?.let {
-                SaveReminderViewModel(ApplicationProvider.getApplicationContext(),
+                SaveReminderViewModel(
+                    ApplicationProvider.getApplicationContext(),
                     it
                 )
             }
     }
 
     @Test
-    fun check_loading(){
-        EspressoIdlingResource.wrapEspressoIdlingResource {
-            val data = ReminderDataItem(
-                "title",
-                "description",
-                "location",
-                22.8869,
-                88.657,
-                "id"
-            )
-            saveReminderViewModel?.validateAndSaveReminder(data)
-            saveReminderViewModel?.showLoading?.observeForever {}
-            assertEquals(saveReminderViewModel?.showLoading?.value, null)
-        }
+    fun check_loading() {
+        val data = ReminderDataItem(
+            "title",
+            "description",
+            "location",
+            22.8869,
+            88.657,
+            "id"
+        )
+        saveReminderViewModel?.validateAndSaveReminder(data)
+        saveReminderViewModel?.showLoading?.observeForever {}
+        assertEquals(saveReminderViewModel?.showLoading?.value, null)
     }
 
     @Test
     fun shouldReturnError() {
-        EspressoIdlingResource.wrapEspressoIdlingResource {
-            val data = ReminderDataItem(
-                "title",
-                "description",
-                "location",
-                null,
-                null,
-                "id"
-            )
-            saveReminderViewModel?.validateAndSaveReminder(data)
-            saveReminderViewModel?.showLoading?.observeForever {}
-            assertEquals(saveReminderViewModel?.showErrorMessage?.value, null)
-        }
+        val data = ReminderDataItem(
+            "title",
+            "description",
+            "location",
+            null,
+            null,
+            "id"
+        )
+        saveReminderViewModel?.validateAndSaveReminder(data)
+        saveReminderViewModel?.showLoading?.observeForever {}
+        assertEquals(saveReminderViewModel?.showErrorMessage?.value, null)
     }
 }

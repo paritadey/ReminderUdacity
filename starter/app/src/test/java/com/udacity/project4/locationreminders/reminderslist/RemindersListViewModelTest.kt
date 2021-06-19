@@ -75,17 +75,15 @@ class RemindersListViewModelTest {
     }
 
     private fun insertNote() {
-        EspressoIdlingResource.wrapEspressoIdlingResource {
-            fakeDataSource = FakeDataSource(MutableList<ReminderDTO>(5) {
-                data
-            })
-            reminderListViewModel = RemindersListViewModel(
-                ApplicationProvider.getApplicationContext(),
-                fakeDataSource!!
-            )
-            runBlockingTest {
-                reminderRepository.saveReminder(data)
-            }
+        fakeDataSource = FakeDataSource(MutableList<ReminderDTO>(5) {
+            data
+        })
+        reminderListViewModel = RemindersListViewModel(
+            ApplicationProvider.getApplicationContext(),
+            fakeDataSource!!
+        )
+        runBlockingTest {
+            reminderRepository.saveReminder(data)
         }
     }
 
@@ -102,12 +100,10 @@ class RemindersListViewModelTest {
 
     @Test
     fun testFetchDataSuccess() {
-        EspressoIdlingResource.wrapEspressoIdlingResource {
-            runBlockingTest {
-                Mockito.`when`(
-                    viewModel?.loadReminders()
-                ).thenReturn(null)
-            }
+        runBlockingTest {
+            Mockito.`when`(
+                viewModel?.loadReminders()
+            ).thenReturn(null)
         }
     }
 

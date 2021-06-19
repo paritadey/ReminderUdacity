@@ -12,6 +12,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
@@ -30,10 +31,13 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragmentDirections
 import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
+import com.udacity.project4.util.DataBindingIdlingResource
+import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matcher
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -47,14 +51,31 @@ import org.mockito.Mockito.verify
 @MediumTest
 class ReminderListFragmentTest {
 
-//    TODO: test the navigation of the fragments.
+    //    TODO: test the navigation of the fragments.
 //    TODO: test the displayed data on the UI.
 //    TODO: add testing for the error messages.
+    private val dataBindingIdlingResource = DataBindingIdlingResource()
+
     @Before
-    fun init(){
-        ActivityScenario.launch(RemindersActivity::class.java)
+    fun init() {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
     }
 
+    @Before
+    fun registerIdlingResource() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+    }
+
+    /**
+     * Unregister your Idling Resource so it can be garbage collected and does not leak any memory.
+     */
+    @After
+    fun unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+    }
 /*
     @Test
     fun clickTask_navigateToDetailFragmentOne() = runBlockingTest {
@@ -74,23 +95,25 @@ class ReminderListFragmentTest {
 
     @Test
     fun fragment_navigation() {
-        EspressoIdlingResource.wrapEspressoIdlingResource {
-            // GIVEN - On the home screen
-            val scenario =
-                launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
-            val navController = mock(NavController::class.java)
-            scenario.onFragment {
-                Navigation.setViewNavController(it.view!!, navController)
-            }
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
 
-            // WHEN - Click on the "+" button
-            onView(withId(R.id.selectLocation)).perform(click())
-
-            // THEN - Verify that we navigate to the add screen
-            verify(navController).navigate(
-                SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
-            )
+        // GIVEN - On the home screen
+        val scenario =
+            launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.view!!, navController)
         }
+
+        // WHEN - Click on the "+" button
+        onView(withId(R.id.selectLocation)).perform(click())
+
+        // THEN - Verify that we navigate to the add screen
+        verify(navController).navigate(
+            SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
+        )
+        activityScenario.close()
     }
 
 

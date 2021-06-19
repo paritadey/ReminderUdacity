@@ -104,18 +104,24 @@ class RemindersActivityTest :
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
+        activityScenario.close()
     }
 
 
     //    TODO: add End to End testing to the app
     @Test
     fun snackBarTest() {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
         onView(ViewMatchers.withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(matches(withText("Please enter title")))
+        activityScenario.close()
     }
 
     @Test
     fun toastTest() {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
         onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
             ViewActions.typeText(
                 "Test"
@@ -132,31 +138,33 @@ class RemindersActivityTest :
         onView(isRoot()).perform(waitFor(2000))
         onView(withText("Reminder Saved !")).inRoot(ToastMatcher())
             .check(matches(isDisplayed()))
+        activityScenario.close()
     }
 
     @Test
     fun shouldReturnError() {
-        EspressoIdlingResource.wrapEspressoIdlingResource {
-            onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
-            onView(withId(com.google.android.material.R.id.snackbar_text)).check(
-                ViewAssertions.matches(
-                    ViewMatchers.withText("Please enter title")
-                )
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
+        onView(withId(com.google.android.material.R.id.snackbar_text)).check(
+            ViewAssertions.matches(
+                ViewMatchers.withText("Please enter title")
             )
-            onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
-                ViewActions.typeText(
-                    "Test"
-                )
+        )
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
+            ViewActions.typeText(
+                "Test"
             )
-            onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
-            onView(isRoot()).perform(waitFor(8000))
-            onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
-            onView(withId(com.google.android.material.R.id.snackbar_text)).check(
-                ViewAssertions.matches(
-                    ViewMatchers.withText("Please select location")
-                )
+        )
+        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
+        onView(isRoot()).perform(waitFor(8000))
+        onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
+        onView(withId(com.google.android.material.R.id.snackbar_text)).check(
+            ViewAssertions.matches(
+                ViewMatchers.withText("Please select location")
             )
-        }
+        )
+        activityScenario.close()
     }
 
     fun waitFor(delay: Long): ViewAction? {
