@@ -3,8 +3,6 @@
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-˜
-happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTransitionsJobIntentService.kt,f\d\fd8084b1177a2300473d2a0983c748d230f964bc
 Ž
 ^app/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceBroadcastReceiver.kt,c\e\ceb11f023f5e8e4296620f533c66fabdb66b4fbc
 k
@@ -29,8 +27,6 @@ capp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/Remi
 Oapp/src/androidTest/java/com/udacity/project4/util/DataBindingIdlingResource.kt,e\6\e67a73c78a010a94bbee41d11aa85a42c1a63d05
 l
 <app/src/androidTest/java/com/udacity/project4/DataFactory.kt,f\9\f9a7fa5a15aa57c1714798d14864a77e489993ff
-
-Oapp/src/test/java/com/udacity/project4/locationreminders/data/FakeDataSource.kt,e\0\e0bab9c51b5d6ee00b1b7a76172676403055fd82
 ƒ
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDao.kt,6\2\6216cc146827994cafdc7d30e1ab16f3da779165
 €

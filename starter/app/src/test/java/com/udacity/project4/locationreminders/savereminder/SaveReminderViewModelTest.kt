@@ -17,7 +17,7 @@ import org.mockito.Mock
 class SaveReminderViewModelTest {
 
 
-    //TODO: provide testing to the SaveReminderView and its live data objects
+    // provide testing to the SaveReminderView and its live data objects
     @Mock
     var dataSource: FakeDataSource? = null
 
