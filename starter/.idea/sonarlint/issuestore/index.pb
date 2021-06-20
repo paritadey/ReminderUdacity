@@ -43,5 +43,3 @@ Fapp/src/main/java/com/udacity/project4/utils/EspressoIdlingResource.kt,2\2\22c
 ^app/src/main/java/com/udacity/project4/locationreminders/data/local/ReminderLocalDataSource.kt,3\4\34c95862b024f9b68c6d34ee8a1995f2c45c704c
 ™
 iapp/src/androidTest/java/com/udacity/project4/locationreminders/reminderslist/ReminderListFragmentTest.kt,4\0\40e3980221012d74381a21ed91c3487a71b475a3
-}
-Mapp/src/test/java/com/udacity/project4/locationreminders/MainCoroutineRule.kt,b\9\b9553d5a5b4b8fac8d077669738045b4ef2fa3da

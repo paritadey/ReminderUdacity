@@ -9,7 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.CoreMatchers.`is`
 import com.google.common.truth.ExpectFailure.assertThat
 import com.udacity.project4.MyApp
-import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -47,9 +46,6 @@ class RemindersListViewModelTest {
     lateinit var data: ReminderDTO
     lateinit var reminderListViewModel: RemindersListViewModel
     lateinit var reminderRepository: RemindersLocalRepository
-    @ExperimentalCoroutinesApi
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
 
     @Before
     fun setupDispatcher() {
@@ -107,14 +103,14 @@ class RemindersListViewModelTest {
             ApplicationProvider.getApplicationContext(),
             fakeDataSource!!
         )
-        mainCoroutineRule.runBlockingTest {
+        runBlockingTest {
             reminderRepository.saveReminder(data)
         }
     }
 
     @Test
     fun testNull() {
-        mainCoroutineRule.runBlockingTest {
+        runBlockingTest {
             Mockito.`when`(
                 dataSource?.getReminders()
             ).thenReturn(null)
@@ -125,7 +121,7 @@ class RemindersListViewModelTest {
 
     @Test
     fun testFetchDataSuccess() {
-        mainCoroutineRule.runBlockingTest {
+        runBlockingTest {
             Mockito.`when`(
                 viewModel?.loadReminders()
             ).thenReturn(null)

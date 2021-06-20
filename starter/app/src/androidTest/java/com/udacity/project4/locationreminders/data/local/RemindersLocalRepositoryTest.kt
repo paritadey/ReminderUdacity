@@ -8,7 +8,6 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -40,8 +39,6 @@ import java.util.function.Predicate.isEqual
 //Medium Test to test the repository
 @MediumTest
 class RemindersLocalRepositoryTest : ReminderDataSource{
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
 
     //    Add testing implementation to the RemindersLocalRepository.kt
     private val task1 =
@@ -86,7 +83,7 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
     }
 
     @Test
-    fun saveReminder_retrievesReminder() = mainCoroutineRule.runBlockingTest {
+    fun saveReminder_retrievesReminder() = runBlockingTest {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         // GIVEN - A new task saved in the database.
@@ -109,7 +106,7 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
     }
 
     @Test
-    fun getTasks_requestsAllTasks() = mainCoroutineRule.runBlockingTest {
+    fun getTasks_requestsAllTasks() = runBlockingTest {
         // When tasks are requested from the tasks repository
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -119,7 +116,7 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
     }
 
     @Test
-    fun noReminderFound() = mainCoroutineRule.runBlockingTest {
+    fun noReminderFound() = runBlockingTest {
         tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
         tasksRepository = RemindersLocalRepository(tasksLocalDataSource, Dispatchers.Main)
         val task = tasksRepository.getReminder("12") as Result.Error
