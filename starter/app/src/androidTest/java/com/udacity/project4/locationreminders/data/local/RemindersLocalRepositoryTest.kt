@@ -5,6 +5,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
@@ -16,11 +17,15 @@ import com.udacity.project4.utils.EspressoIdlingResource.wrapEspressoIdlingResou
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.core.IsEqual
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.function.Predicate.isEqual
@@ -30,6 +35,8 @@ import java.util.function.Predicate.isEqual
 //Medium Test to test the repository
 @MediumTest
 class RemindersLocalRepositoryTest {
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     //    Add testing implementation to the RemindersLocalRepository.kt
     private val task1 =
@@ -45,7 +52,19 @@ class RemindersLocalRepositoryTest {
     private lateinit var tasksLocalDataSource: RemindersDao
     private lateinit var tasksRepository: RemindersLocalRepository
     private val dataBindingIdlingResource = DataBindingIdlingResource()
+    val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 
+    @Before
+    fun setupDispatcher() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @ExperimentalCoroutinesApi
+    @After
+    fun tearDownDispatcher() {
+        Dispatchers.resetMain()
+        testDispatcher.cleanupTestCoroutines()
+    }
 
     @Before
     fun createRepository() {
@@ -54,12 +73,13 @@ class RemindersLocalRepositoryTest {
         tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
         // Get a reference to the class under test
         tasksRepository = RemindersLocalRepository(
-            tasksLocalDataSource, Dispatchers.Unconfined
+            tasksLocalDataSource, Dispatchers.Main
         )
         activityScenario.close()
     }
+
     @Test
-    fun saveReminder_retrievesReminder() = runBlocking {
+    fun saveReminder_retrievesReminder() = mainCoroutineRule.runBlockingTest {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         // GIVEN - A new task saved in the database.
@@ -67,7 +87,7 @@ class RemindersLocalRepositoryTest {
         tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
         // Get a reference to the class under test
         tasksRepository = RemindersLocalRepository(
-            tasksLocalDataSource, Dispatchers.Unconfined
+            tasksLocalDataSource, Dispatchers.Main
         )
         tasksRepository.saveReminder(newTask)
         // WHEN  - Task retrieved by ID.
@@ -82,7 +102,7 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
-    fun getTasks_requestsAllTasks() = runBlockingTest {
+    fun getTasks_requestsAllTasks() = mainCoroutineRule.runBlockingTest {
         // When tasks are requested from the tasks repository
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -92,11 +112,11 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
-    fun noReminderFound() = runBlockingTest {
+    fun noReminderFound() = mainCoroutineRule.runBlockingTest {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
-        tasksRepository = RemindersLocalRepository(tasksLocalDataSource, Dispatchers.Unconfined)
+        tasksRepository = RemindersLocalRepository(tasksLocalDataSource, Dispatchers.Main)
         val task = tasksRepository.getReminder("12") as Result.Error
         assertThat(task.message, IsEqual("data not found"))
         activityScenario.close()

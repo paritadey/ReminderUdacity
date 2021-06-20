@@ -29,14 +29,8 @@ capp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/Remi
 Oapp/src/androidTest/java/com/udacity/project4/util/DataBindingIdlingResource.kt,e\6\e67a73c78a010a94bbee41d11aa85a42c1a63d05
 l
 <app/src/androidTest/java/com/udacity/project4/DataFactory.kt,f\9\f9a7fa5a15aa57c1714798d14864a77e489993ff
-}
-Mapp/src/test/java/com/udacity/project4/locationreminders/TestCoroutineRule.kt,1\8\18191a0f80b011501cc825b2270b2786b56cb29d
 
 Oapp/src/test/java/com/udacity/project4/locationreminders/data/FakeDataSource.kt,e\0\e0bab9c51b5d6ee00b1b7a76172676403055fd82
-|
-Lapp/src/test/java/com/udacity/project4/locationreminders/LiveDataTestUtil.kt,9\c\9cb5703c388ceb48706b81be5e84e023521af8d5
-
-`app/src/main/java/com/udacity/project4/locationreminders/reminderslist/RemindersListViewModel.kt,d\7\d7656f1bc2c98964a974a58a206d2a0bcf029b1e
 ƒ
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDao.kt,6\2\6216cc146827994cafdc7d30e1ab16f3da779165
 ™
@@ -47,7 +41,3 @@ Papp/src/main/java/com/udacity/project4/locationreminders/data/dto/ReminderDTO.k
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/ReminderDataSource.kt,4\c\4c20d7583e8019b89ceb75916350741e60c0bf62
 ˆ
 Xapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDatabase.kt,a\e\aeb320778073971cf5105d1d2666ff1599e8798c
-’
-bapp/src/test/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModelTest.kt,0\e\0e04996524a45e7d830bb34ce8e8c188d1f3eca2
-”
-dapp/src/test/java/com/udacity/project4/locationreminders/reminderslist/RemindersListViewModelTest.kt,4\9\49b6c850619f9fae2db51a5ba1b0fc71e31b2471

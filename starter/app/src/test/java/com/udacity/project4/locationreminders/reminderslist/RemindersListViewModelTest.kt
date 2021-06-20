@@ -1,11 +1,15 @@
 package com.udacity.project4.locationreminders.reminderslist
 
 import android.app.Application
+import androidx.annotation.VisibleForTesting
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.*
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.hamcrest.CoreMatchers.`is`
+import com.google.common.truth.ExpectFailure.assertThat
 import com.udacity.project4.MyApp
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -14,13 +18,19 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 
 @RunWith(JUnit4::class)
@@ -30,13 +40,28 @@ class RemindersListViewModelTest {
     //TODO: provide testing to the RemindersListViewModel and its live data objects
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
+    val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 
     private var viewModel: RemindersListViewModel? = null
     var fakeDataSource: FakeDataSource? = null
     lateinit var data: ReminderDTO
     lateinit var reminderListViewModel: RemindersListViewModel
     lateinit var reminderRepository: RemindersLocalRepository
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
+    @Before
+    fun setupDispatcher() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @ExperimentalCoroutinesApi
+    @After
+    fun tearDownDispatcher() {
+        Dispatchers.resetMain()
+        testDispatcher.cleanupTestCoroutines()
+    }
 
     @Mock
     var dataSource: ReminderDataSource? = null
@@ -68,7 +93,7 @@ class RemindersListViewModelTest {
         reminderRepository = remindersDao?.let {
             RemindersLocalRepository(
                 it,
-                Dispatchers.Unconfined
+                Dispatchers.Main
             )
         }!!
         insertNote()
@@ -82,14 +107,14 @@ class RemindersListViewModelTest {
             ApplicationProvider.getApplicationContext(),
             fakeDataSource!!
         )
-        runBlockingTest {
+        mainCoroutineRule.runBlockingTest {
             reminderRepository.saveReminder(data)
         }
     }
 
     @Test
     fun testNull() {
-        runBlockingTest {
+        mainCoroutineRule.runBlockingTest {
             Mockito.`when`(
                 dataSource?.getReminders()
             ).thenReturn(null)
@@ -100,7 +125,7 @@ class RemindersListViewModelTest {
 
     @Test
     fun testFetchDataSuccess() {
-        runBlockingTest {
+        mainCoroutineRule.runBlockingTest {
             Mockito.`when`(
                 viewModel?.loadReminders()
             ).thenReturn(null)
