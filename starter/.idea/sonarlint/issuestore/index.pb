@@ -33,8 +33,6 @@ l
 Oapp/src/test/java/com/udacity/project4/locationreminders/data/FakeDataSource.kt,e\0\e0bab9c51b5d6ee00b1b7a76172676403055fd82
 ƒ
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDao.kt,6\2\6216cc146827994cafdc7d30e1ab16f3da779165
-™
-iapp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/ReminderLocalDataSourceTest.kt,0\7\070419197f8252d0af2e6d0966fb30a7ab9058e2
 €
 Papp/src/main/java/com/udacity/project4/locationreminders/data/dto/ReminderDTO.kt,8\5\857f48f0024512bf41868ee21aa2f27fa3483550
 ƒ
