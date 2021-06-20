@@ -8,18 +8,22 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.data.dto.succeeded
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
 import com.udacity.project4.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.core.IsEqual
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.function.Predicate.isEqual
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -54,15 +58,47 @@ class RemindersLocalRepositoryTest {
         )
         activityScenario.close()
     }
+    @Test
+    fun saveReminder_retrievesReminder() = runBlocking {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        // GIVEN - A new task saved in the database.
+        val newTask = ReminderDTO("title", "description", "22.87451, 88.69471", 22.87451, 88.69471)
+        tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
+        // Get a reference to the class under test
+        tasksRepository = RemindersLocalRepository(
+            tasksLocalDataSource, Dispatchers.Unconfined
+        )
+        tasksRepository.saveReminder(newTask)
+        // WHEN  - Task retrieved by ID.
+        val result = tasksRepository.getReminder(newTask.id)
+
+        // THEN - Same task is returned.
+        assertThat(result.succeeded, `is`(true))
+        result as Result.Success
+        assertThat(result.data.title, `is`("title"))
+        assertThat(result.data.description, `is`("description"))
+        activityScenario.close()
+    }
 
     @Test
-    fun getTasks_requestsAllTasksFromRemoteDataSource() = runBlockingTest {
+    fun getTasks_requestsAllTasks() = runBlockingTest {
         // When tasks are requested from the tasks repository
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
-
         val tasks = tasksRepository.getReminders() as Result.Success
         assertThat(tasks.data, IsEqual(remoteTasks))
+        activityScenario.close()
+    }
+
+    @Test
+    fun noReminderFound() = runBlockingTest {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
+        tasksRepository = RemindersLocalRepository(tasksLocalDataSource, Dispatchers.Unconfined)
+        val task = tasksRepository.getReminder("12") as Result.Error
+        assertThat(task.message, IsEqual("data not found"))
         activityScenario.close()
     }
 
