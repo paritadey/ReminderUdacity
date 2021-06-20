@@ -83,8 +83,8 @@ class ReminderLocalDataSourceTest {
         localDataSource.saveReminder(newTask)
         // When completed in the persistent repository
         val result = localDataSource.getReminder(newTask.id)
-        newTask as Result.Error
-        assertThat(newTask.message, IsEqual("data not found"))
+        result as Result.Error
+        assertThat(result.message, IsEqual("data not found"))
     }
 
     @After
