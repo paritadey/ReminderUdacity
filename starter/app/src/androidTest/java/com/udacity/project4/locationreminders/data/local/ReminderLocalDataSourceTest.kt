@@ -17,6 +17,7 @@ import org.hamcrest.CoreMatchers
 import org.junit.*
 import org.junit.runner.RunWith
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.core.IsEqual
 
 
@@ -62,6 +63,18 @@ class ReminderLocalDataSourceTest {
         result as Result.Success
         assertThat(result.data.title, CoreMatchers.`is`("title"))
         assertThat(result.data.description, CoreMatchers.`is`("description"))
+    }
+    @Test
+    fun completeTask_retrievedTaskIsComplete() = runBlocking {
+        // Given a new task in the persistent repository
+        val newTask = ReminderDTO("title", "description", "22.8745, 88.6971", 22.8745, 88.6971)
+        localDataSource.saveReminder(newTask)
+        // When completed in the persistent repository
+        val result = localDataSource.getReminder(newTask.id)
+        // Then the task can be retrieved from the persistent repository and is complete
+        assertThat(result.succeeded, `is`(true))
+        result as Result.Success
+        assertThat(result.data.title, `is`(newTask.title))
     }
 
     @Test
