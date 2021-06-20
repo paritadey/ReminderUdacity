@@ -79,9 +79,12 @@ class ReminderLocalDataSourceTest {
 
     @Test
     fun noReminderPresent() = runBlockingTest {
-        val task = localDataSource.getReminder("12")
-        task as Result.Error
-        assertThat(task.message, IsEqual("data not found"))
+        val newTask = ReminderDTO("title", "description", "22.8745, 88.6971", 22.8745, 88.6971)
+        localDataSource.saveReminder(newTask)
+        // When completed in the persistent repository
+        val result = localDataSource.getReminder(newTask.id)
+        newTask as Result.Error
+        assertThat(newTask.message, IsEqual("data not found"))
     }
 
     @After
