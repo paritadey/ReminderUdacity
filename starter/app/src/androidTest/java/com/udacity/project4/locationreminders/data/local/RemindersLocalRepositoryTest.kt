@@ -113,13 +113,10 @@ class RemindersLocalRepositoryTest {
 
     @Test
     fun noReminderFound() = mainCoroutineRule.runBlockingTest {
-        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
         tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
         tasksRepository = RemindersLocalRepository(tasksLocalDataSource, Dispatchers.Main)
         val task = tasksRepository.getReminder("12") as Result.Error
         assertThat(task.message, IsEqual("data not found"))
-        activityScenario.close()
     }
 
     @Before
