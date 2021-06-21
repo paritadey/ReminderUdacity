@@ -1,50 +1,38 @@
 package com.udacity.project4
 
-import android.R
 import android.app.Application
-import android.os.Bundle
 import android.view.View
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.replace
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
-import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
-import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.android.synthetic.main.activity_reminders.*
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
-import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -53,7 +41,6 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.get
-import org.mockito.Mockito
 
 
 @RunWith(AndroidJUnit4::class)
@@ -101,18 +88,21 @@ class RemindersActivityTest :
         runBlocking {
             repository.deleteAllReminders()
         }
+/*
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
         activityScenario.close()
+*/
     }
-
 
     //    TODO: add End to End testing to the app
     @Test
     fun snackBarTest() {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(isRoot()).perform(waitFor(5000))
         onView(ViewMatchers.withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(matches(withText("Please enter title")))
         activityScenario.close()
@@ -122,6 +112,7 @@ class RemindersActivityTest :
     fun toastTest() {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
         onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
             ViewActions.typeText(
                 "Test"
@@ -132,6 +123,7 @@ class RemindersActivityTest :
         )
         onView(ViewMatchers.withId(com.udacity.project4.R.id.selectLocation)).perform(ViewActions.click())
         onView(isRoot()).perform(waitFor(5000))
+        onView(withText("Marker")).perform(ViewActions.click())
         onView(ViewMatchers.withId(com.udacity.project4.R.id.proceed)).perform(ViewActions.click())
         onView(isRoot()).perform(waitFor(2000))
         onView(ViewMatchers.withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
@@ -145,6 +137,8 @@ class RemindersActivityTest :
     fun shouldReturnError() {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(isRoot()).perform(waitFor(5000))
         onView(withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(
             ViewAssertions.matches(

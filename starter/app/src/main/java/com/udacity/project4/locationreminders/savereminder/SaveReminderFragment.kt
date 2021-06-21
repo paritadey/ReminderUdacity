@@ -214,7 +214,7 @@ class SaveReminderFragment : BaseFragment() {
         super.onDestroy()
         //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
-        removeGeofences()
+      //  removeGeofences()
     }
 
     private fun getRuntimePermissions(): Boolean {

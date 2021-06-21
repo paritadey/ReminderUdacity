@@ -8,7 +8,7 @@ import org.hamcrest.TypeSafeMatcher
 
 class ToastMatcher : TypeSafeMatcher<Root>() {
     override fun describeTo(description: Description?) {
-        description?.appendText("is toast")
+        description?.appendText("Reminder Saved !")
     }
 
     override fun matchesSafely(item: Root?): Boolean {
