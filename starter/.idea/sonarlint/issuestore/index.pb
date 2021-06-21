@@ -1,8 +1,4 @@
 
-@
-app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
-<
-build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 Ž
 ^app/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceBroadcastReceiver.kt,c\e\ceb11f023f5e8e4296620f533c66fabdb66b4fbc
 k
@@ -15,8 +11,6 @@ Wapp/src/main/java/com/udacity/project4/locationreminders/ReminderDescriptionAct
 ^app/src/main/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModel.kt,3\7\37cd167cee92ce67358665e1341605524c528d3c
 _
 /app/src/main/java/com/udacity/project4/MyApp.kt,3\7\3715d3b4931ec610cd054e52b1e45e4aca42605c
-Ž
-^app/src/androidTest/java/com/udacity/project4/locationreminders/data/local/RemindersDaoTest.kt,1\b\1b2e1ffa770ad0f6973d85e0775ff507825c0ce5
 “
 capp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/RemindersDatabaseTest.kt,b\7\b73d6720660bc53b78a69e39270f852181385101
 

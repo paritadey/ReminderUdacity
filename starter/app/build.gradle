@@ -128,5 +128,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:7.1.1'
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation 'androidx.test.ext:junit:1.1.0'
 
 }
