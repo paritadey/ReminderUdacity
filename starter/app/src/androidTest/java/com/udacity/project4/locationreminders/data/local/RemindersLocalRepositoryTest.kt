@@ -82,38 +82,6 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
         activityScenario.close()
     }
 
-    @Test
-    fun saveReminder_retrievesReminder() = runBlockingTest {
-        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-        // GIVEN - A new task saved in the database.
-        val newTask = ReminderDTO("title", "description", "22.87451, 88.69471", 22.87451, 88.69471)
-        tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
-        // Get a reference to the class under test
-        tasksRepository = RemindersLocalRepository(
-            tasksLocalDataSource, Dispatchers.Main
-        )
-        tasksRepository.saveReminder(newTask)
-        // WHEN  - Task retrieved by ID.
-        val result = tasksRepository.getReminder(newTask.id)
-
-        // THEN - Same task is returned.
-        assertThat(result.succeeded, `is`(true))
-        result as Result.Success
-        assertThat(result.data.title, `is`("title"))
-        assertThat(result.data.description, `is`("description"))
-        activityScenario.close()
-    }
-
-    @Test
-    fun getTasks_requestsAllTasks() = runBlockingTest {
-        // When tasks are requested from the tasks repository
-        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-        val tasks = tasksRepository.getReminders() as Result.Success
-        assertThat(tasks.data, IsEqual(remoteTasks))
-        activityScenario.close()
-    }
 
     @Before
     fun registerIdlingResource() {
