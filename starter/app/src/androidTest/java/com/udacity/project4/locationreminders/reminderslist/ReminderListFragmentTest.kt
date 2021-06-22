@@ -52,9 +52,9 @@ import org.mockito.Mockito.verify
 @MediumTest
 class ReminderListFragmentTest {
 
-    //    TODO: test the navigation of the fragments.
-//    TODO: test the displayed data on the UI.
-//    TODO: add testing for the error messages.
+    //     test the navigation of the fragments.
+//     test the displayed data on the UI.
+//     add testing for the error messages.
     private val dataBindingIdlingResource = DataBindingIdlingResource()
     private lateinit var repository: ReminderDataSource
 
@@ -65,9 +65,6 @@ class ReminderListFragmentTest {
 
     @Test
     fun fragment_navigation() {
-        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-
         // GIVEN - On the home screen
         val scenario =
             launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
@@ -83,7 +80,6 @@ class ReminderListFragmentTest {
         verify(navController).navigate(
             SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
         )
-        activityScenario.close()
     }
 
 

@@ -44,7 +44,6 @@ import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobIntentService
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
-import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import java.util.*
@@ -118,7 +117,7 @@ class SaveReminderFragment : BaseFragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
 
-        setDisplayHomeAsUpEnabled(true)
+        //setDisplayHomeAsUpEnabled(true)
 
         binding.viewModel = _viewModel
 
@@ -131,12 +130,12 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         binding.selectLocation.setOnClickListener {
             //            Navigate to another fragment to get the user location
-            if (!statusCheck()) {
+            /*if (!statusCheck()) {
                 enableLoc()
-            } else {
+            } else {*/
                 _viewModel.navigationCommand.value =
                     NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
-            }
+          //  }
         }
 
         binding.saveReminder.setOnClickListener {
