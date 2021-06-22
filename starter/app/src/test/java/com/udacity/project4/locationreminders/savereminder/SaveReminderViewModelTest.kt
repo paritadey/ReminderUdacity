@@ -6,6 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.FakeReminderTestRepository
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.getOrAwaitValue
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.EspressoIdlingResource
 import junit.framework.Assert.assertEquals
@@ -22,8 +24,6 @@ import org.mockito.Mock
 
 @ExperimentalCoroutinesApi
 class SaveReminderViewModelTest {
-
-
     // provide testing to the SaveReminderView and its live data objects
     private lateinit var saveReminderViewModel: SaveReminderViewModel
 
@@ -40,7 +40,21 @@ class SaveReminderViewModelTest {
     fun setupViewModel() {
         // We initialise the repository with no tasks
         tasksRepository = FakeReminderTestRepository()
+        val task1 = ReminderDTO("Title1", "Description1", "22.741, 88.697", 22.741, 88.697)
+        val task2 = ReminderDTO("Title2", "Description2", "22.78945, 88.14263", 22.78945, 88.14263)
+        val task3 = ReminderDTO("Title3", "Description3", "22.3145, 88.6412", 22.3145, 88.6412)
+        tasksRepository.addReminders(task1, task2, task3)
         saveReminderViewModel = SaveReminderViewModel(Application(), tasksRepository)
+    }
+
+    @Test
+    fun addNewReminder_setsNewReminderEvent() {
+        saveReminderViewModel.addNewTask()
+        val value = saveReminderViewModel.newTaskEvent.getOrAwaitValue()
+        MatcherAssert.assertThat(
+            value.getContentIfNotHandled(),
+            CoreMatchers.not(CoreMatchers.nullValue())
+        )
     }
 
     @Test
@@ -53,9 +67,9 @@ class SaveReminderViewModelTest {
             88.657,
             "id"
         )
-        saveReminderViewModel?.validateAndSaveReminder(data)
-        saveReminderViewModel?.showLoading?.observeForever {}
-        assertEquals(saveReminderViewModel?.showLoading?.value, null)
+        saveReminderViewModel.validateAndSaveReminder(data)
+        saveReminderViewModel.showLoading.observeForever {}
+        assertEquals(saveReminderViewModel.showLoading.value, false)
     }
 
     @Test
@@ -68,8 +82,8 @@ class SaveReminderViewModelTest {
             null,
             "id"
         )
-        saveReminderViewModel?.validateAndSaveReminder(data)
-        saveReminderViewModel?.showLoading?.observeForever {}
-        assertEquals(saveReminderViewModel?.showErrorMessage?.value, null)
+        saveReminderViewModel.validateAndSaveReminder(data)
+        saveReminderViewModel.showLoading.observeForever {}
+        assertEquals(saveReminderViewModel.showErrorMessage.value, null)
     }
 }

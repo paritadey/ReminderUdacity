@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.PointOfInterest
+import com.udacity.project4.Event
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseViewModel
 import com.udacity.project4.base.NavigationCommand
@@ -80,6 +81,11 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             return false
         }
         return true
+    }
+    private val _newTaskEvent = MutableLiveData<Event<Unit>>()
+    val newTaskEvent: LiveData<Event<Unit>> = _newTaskEvent
+    fun addNewTask() {
+        _newTaskEvent.value = Event(Unit)
     }
 }
 private const val HINT_INDEX_KEY = "hintIndex"

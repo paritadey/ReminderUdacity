@@ -21,14 +21,8 @@ Xapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDa
 Mapp/src/main/java/com/udacity/project4/locationreminders/RemindersActivity.kt,8\a\8a08a10ab44beba1a7a98f6d75e043f21bc36294
 v
 Fapp/src/main/java/com/udacity/project4/utils/EspressoIdlingResource.kt,2\2\22cee300f248bf74de57b52e50248720ec21d81a
-ô
-iapp/src/androidTest/java/com/udacity/project4/locationreminders/reminderslist/ReminderListFragmentTest.kt,4\0\40e3980221012d74381a21ed91c3487a71b475a3
 {
 Kapp/src/main/java/com/udacity/project4/locationreminders/data/dto/Result.kt,9\3\935f28647bfa920de6bd586d5ec3d996a25d3710
-ê
-`app/src/main/java/com/udacity/project4/locationreminders/reminderslist/RemindersListViewModel.kt,d\7\d7656f1bc2c98964a974a58a206d2a0bcf029b1e
-|
-Lapp/src/test/java/com/udacity/project4/locationreminders/LiveDataTestUtil.kt,9\c\9cb5703c388ceb48706b81be5e84e023521af8d5
 }
 Mapp/src/test/java/com/udacity/project4/locationreminders/TestCoroutineRule.kt,1\8\18191a0f80b011501cc825b2270b2786b56cb29d
 }

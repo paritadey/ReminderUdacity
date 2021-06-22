@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.data
 
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import kotlinx.coroutines.runBlocking
 import java.util.LinkedHashMap
 
 class FakeReminderTestRepository : ReminderDataSource {
@@ -34,5 +35,11 @@ class FakeReminderTestRepository : ReminderDataSource {
 
     override suspend fun deleteAllReminders() {
         reminderData.clear()
+    }
+    fun addReminders(vararg tasks: ReminderDTO) {
+        for (task in tasks) {
+            reminderData[task.id] = task
+        }
+        runBlocking { getReminders() }
     }
 }

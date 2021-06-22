@@ -9,11 +9,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.CoreMatchers.`is`
 import com.google.common.truth.ExpectFailure.assertThat
 import com.udacity.project4.MyApp
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
+import com.udacity.project4.locationreminders.data.FakeReminderTestRepository
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.RemindersDao
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.locationreminders.getOrAwaitValue
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +24,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import org.hamcrest.MatcherAssert
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -38,101 +42,30 @@ class RemindersListViewModelTest {
 
     // provide testing to the RemindersListViewModel and its live data objects
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-    val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+    var instantExecutorRule = InstantTaskExecutorRule()
 
-    private var viewModel: RemindersListViewModel? = null
-    var fakeDataSource: FakeDataSource? = null
-    lateinit var data: ReminderDTO
-    lateinit var reminderListViewModel: RemindersListViewModel
-    lateinit var reminderRepository: RemindersLocalRepository
+    // Subject under test
+    private lateinit var reminderListViewModel: RemindersListViewModel
 
-    @Before
-    fun setupDispatcher() {
-        Dispatchers.setMain(testDispatcher)
-    }
+    // Use a fake repository to be injected into the viewmodel
+    private lateinit var tasksRepository: FakeReminderTestRepository
 
+    // Set the main coroutines dispatcher for unit testing.
     @ExperimentalCoroutinesApi
-    @After
-    fun tearDownDispatcher() {
-        Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
-    }
-
-    @Mock
-    var dataSource: ReminderDataSource? = null
-
-    @Mock
-    var remindersDao: RemindersDao? = null
-
-
-    @Mock
-    lateinit var lifecycleOwner: LifecycleOwner
-    lateinit var lifecycle: Lifecycle
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     @Before
-    @Throws(Exception::class)
-    fun setUp() {
-
-        MockitoAnnotations.initMocks(this@RemindersListViewModelTest)
-        data = ReminderDTO(
-            id = "abcs",
-            title = "hello",
-            description = "world",
-            latitude = 22.8758,
-            longitude = 88.975,
-            location = "location"
-        )
-
-        lifecycle = LifecycleRegistry(lifecycleOwner)
-        viewModel = RemindersListViewModel(MyApp(), FakeDataSource())
-        reminderRepository = remindersDao?.let {
-            RemindersLocalRepository(
-                it,
-                Dispatchers.Main
-            )
-        }!!
-        insertNote()
-    }
-
-    private fun insertNote() {
-        fakeDataSource = FakeDataSource(MutableList<ReminderDTO>(5) {
-            data
-        })
-        reminderListViewModel = RemindersListViewModel(
-            ApplicationProvider.getApplicationContext(),
-            fakeDataSource!!
-        )
-        runBlockingTest {
-            reminderRepository.saveReminder(data)
-        }
+    fun setupReminderListViewModel() {
+        tasksRepository = FakeReminderTestRepository()
+        reminderListViewModel = RemindersListViewModel(Application(),tasksRepository)
     }
 
     @Test
-    fun testNull() {
-        runBlockingTest {
-            Mockito.`when`(
-                dataSource?.getReminders()
-            ).thenReturn(null)
-            Assert.assertNotNull(viewModel?.remindersList)
-
-        }
+    fun loadReminders_loading() {
+        mainCoroutineRule.pauseDispatcher()
+        MatcherAssert.assertThat(reminderListViewModel.dataLoading.getOrAwaitValue(), `is`(false))
+        mainCoroutineRule.resumeDispatcher()
+        MatcherAssert.assertThat(reminderListViewModel.dataLoading.getOrAwaitValue(), `is`(false))
     }
-
-    @Test
-    fun testFetchDataSuccess() {
-        runBlockingTest {
-            Mockito.`when`(
-                viewModel?.loadReminders()
-            ).thenReturn(null)
-        }
-    }
-
-    @After
-    @Throws(java.lang.Exception::class)
-    fun tearDown() {
-        dataSource = null
-        viewModel = null
-    }
-
 }
