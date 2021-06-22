@@ -26,6 +26,7 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.R
 import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositoryTest
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
@@ -55,43 +56,12 @@ class ReminderListFragmentTest {
 //    TODO: test the displayed data on the UI.
 //    TODO: add testing for the error messages.
     private val dataBindingIdlingResource = DataBindingIdlingResource()
+    private lateinit var repository: ReminderDataSource
 
     @Before
     fun init() {
-        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
+        repository = RemindersLocalRepositoryTest()
     }
-
-    @Before
-    fun registerIdlingResource() {
-        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
-    }
-
-    /**
-     * Unregister your Idling Resource so it can be garbage collected and does not leak any memory.
-     */
-    @After
-    fun unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
-        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
-    }
-/*
-    @Test
-    fun clickTask_navigateToDetailFragmentOne() = runBlockingTest {
-
-        // GIVEN - On the home screen
-        val scenario = launchFragmentInContainer<SelectLocationFragment>(Bundle(), R.style.AppTheme)
-
-        val navController = mock(NavController::class.java)
-        scenario.onFragment {
-            Navigation.setViewNavController(it.view!!, navController)
-        }
-
-        // THEN - Verify that we navigate to the first detail screen
-        verify(navController).navigate(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
-        )
-    }*/
 
     @Test
     fun fragment_navigation() {

@@ -8,7 +8,6 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
-import com.udacity.project4.locationreminders.data.dto.succeeded
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -58,7 +57,7 @@ class ReminderLocalDataSourceTest {
         val result = localDataSource.getReminder(newTask.id)
 
         // THEN - Same task is returned
-        assertThat(result.succeeded, CoreMatchers.`is`(true))
+       // assertThat(result.succeeded, CoreMatchers.`is`(true))
         result as Result.Success
         assertThat(result.data.title, CoreMatchers.`is`("title"))
         assertThat(result.data.description, CoreMatchers.`is`("description"))
@@ -72,7 +71,7 @@ class ReminderLocalDataSourceTest {
         // When completed in the persistent repository
         val result = localDataSource.getReminder(newTask.id)
         // Then the task can be retrieved from the persistent repository and is complete
-        assertThat(result.succeeded, `is`(true))
+      //  assertThat(result.succeeded, `is`(true))
         result as Result.Success
         assertThat(result.data.title, `is`(newTask.title))
     }
