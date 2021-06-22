@@ -47,16 +47,9 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
         ReminderDTO("Title2", "Description2", "location2", 22.578, 88.6548, "ID2")
     private val task3 =
         ReminderDTO("Title3", "Description3", "location3", 22.578, 88.6548, "ID3")
-    private val remoteTasks = listOf(task1, task2).sortedBy { it.id }
-    private val localTasks = listOf(task3).sortedBy { it.id }
-    private val newTasks = listOf(task3).sortedBy { it.id }
-    private lateinit var tasksRemoteDataSource: FakeDataSource
-    private lateinit var tasksLocalDataSource: RemindersDao
-    private lateinit var tasksRepository: RemindersLocalRepository
     private val dataBindingIdlingResource = DataBindingIdlingResource()
     val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
     var reminderData: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
-    private val observableReminders = MutableLiveData<kotlin.Result<List<ReminderDTO>>>()
 
     @Before
     fun setupDispatcher() {
@@ -69,19 +62,6 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
         Dispatchers.resetMain()
         testDispatcher.cleanupTestCoroutines()
     }
-
-    @Before
-    fun createRepository() {
-        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-        tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
-        // Get a reference to the class under test
-        tasksRepository = RemindersLocalRepository(
-            tasksLocalDataSource, Dispatchers.Main
-        )
-        activityScenario.close()
-    }
-
 
     @Before
     fun registerIdlingResource() {

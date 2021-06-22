@@ -34,7 +34,6 @@ class ReminderLocalDataSourceTest {
 
     @Before
     fun setup() {
-        // using an in-memory database for testing, since it doesn't survive killing the process
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             RemindersDatabase::class.java
@@ -64,6 +63,7 @@ class ReminderLocalDataSourceTest {
         assertThat(result.data.title, CoreMatchers.`is`("title"))
         assertThat(result.data.description, CoreMatchers.`is`("description"))
     }
+
     @Test
     fun completeTask_retrievedTaskIsComplete() = runBlocking {
         // Given a new task in the persistent repository
