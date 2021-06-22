@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.udacity.project4.NoteFactory
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
@@ -19,7 +19,6 @@ import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-//Unit test the DAO
 @SmallTest
 class RemindersDaoTest {
 
@@ -37,33 +36,36 @@ class RemindersDaoTest {
         database = Room.inMemoryDatabaseBuilder(
             getApplicationContext(),
             RemindersDatabase::class.java
-        ).allowMainThreadQueries().build()
+        ).build()
     }
 
     @After
     fun closeDb() = database.close()
 
-   @Test
-    suspend fun insertNotesSaveData() {
-        val cachedNotes = NoteFactory.makeNoteEntity()
-       database.reminderDao().saveReminder(cachedNotes)
-        val notes = database.reminderDao().getReminders()
-        assert(notes.isNotEmpty())
+    @Test
+    fun insertReminder() = runBlockingTest {
+        val reminder =
+            ReminderDTO("title", "description", "22.87412,88.974512", 22.87412, 88.974512)
+        database.reminderDao().saveReminder(reminder)
+        val loaded = database.reminderDao().getReminderById(reminder.id)
+        assertThat<ReminderDTO>(loaded as ReminderDTO, notNullValue())
+        assertThat(loaded.id, `is`(reminder.id))
+        assertThat(loaded.title, `is`(reminder.title))
+        assertThat(loaded.description, `is`(reminder.description))
     }
 
     @Test
-    suspend fun getNotesRetrieveData() {
-        val notes = NoteFactory.makeNoteList(5)
-        notes.forEach { database.reminderDao().saveReminder(it) }
-        val retrievedNotes = database.reminderDao().getReminders()
-        assert(retrievedNotes == notes.sortedWith(compareBy({ it.id }, { it.id })))
+    fun updateTaskAndGetById() = runBlockingTest {
+        val reminder =
+            ReminderDTO("title", "description", "22.87412,88.974512", 22.87412, 88.974512)
+        database.reminderDao().saveReminder(reminder)
+        val reminderUpdate =
+            ReminderDTO("new title", "new descriptions", "22.87412,88.974512", 22.87412, 88.974512)
+        database.reminderDao().updateTask(reminderUpdate)
+        val loaded = database.reminderDao().getReminderById(reminder.id)
+        assertThat(loaded?.id, `is`(reminder.id))
+        assertThat(loaded?.title, `is`("title"))
+        assertThat(loaded?.description, `is`("description"))
     }
 
-    @Test
-    suspend fun clearNotesClearsData() {
-        val notes = NoteFactory.makeNote()
-        database.reminderDao().saveReminder(notes)
-        database.reminderDao().deleteAllReminders()
-        assert(database.reminderDao().getReminders().isEmpty())
-    }
 }
