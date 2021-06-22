@@ -115,14 +115,6 @@ class RemindersLocalRepositoryTest : ReminderDataSource{
         activityScenario.close()
     }
 
-    @Test
-    fun noReminderFound() = runBlockingTest {
-        tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
-        tasksRepository = RemindersLocalRepository(tasksLocalDataSource, Dispatchers.Main)
-        val task = tasksRepository.getReminder("12") as Result.Error
-        assertThat(task.message, IsEqual("data not found"))
-    }
-
     @Before
     fun registerIdlingResource() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
