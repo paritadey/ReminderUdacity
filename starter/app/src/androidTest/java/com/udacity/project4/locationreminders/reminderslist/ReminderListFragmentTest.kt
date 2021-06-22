@@ -24,9 +24,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.R
+import com.udacity.project4.ToastMatcher
 import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositoryTest
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
@@ -61,6 +63,20 @@ class ReminderListFragmentTest {
     @Before
     fun init() {
         repository = RemindersLocalRepositoryTest()
+    }
+
+    @Test
+    fun activeReminderData() = runBlockingTest {
+        val scenario =
+            launchFragmentInContainer<SaveReminderFragment>(Bundle(), R.style.AppTheme)
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.view!!, navController)
+        }
+        val activeTask =
+            ReminderDTO("Active Task", "AndroidX Rocks", "22.541, 88.674", 22.541, 88.674)
+        repository.saveReminder(activeTask)
+        onView(withId(R.id.saveReminder)).perform(click())
     }
 
     @Test
