@@ -40,40 +40,7 @@ import java.util.function.Predicate.isEqual
 @MediumTest
 class RemindersLocalRepositoryTest : ReminderDataSource{
 
-    //    Add testing implementation to the RemindersLocalRepository.kt
-    private val task1 =
-        ReminderDTO("Title1", "Description1", "location1", 22.578, 88.6548, "ID1")
-    private val task2 =
-        ReminderDTO("Title2", "Description2", "location2", 22.578, 88.6548, "ID2")
-    private val task3 =
-        ReminderDTO("Title3", "Description3", "location3", 22.578, 88.6548, "ID3")
-    private val dataBindingIdlingResource = DataBindingIdlingResource()
-    val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
     var reminderData: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
-
-    @Before
-    fun setupDispatcher() {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDownDispatcher() {
-        Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
-    }
-
-    @Before
-    fun registerIdlingResource() {
-        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
-    }
-
-    @After
-    fun unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
-        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
-    }
 
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
         return Result.Success(reminderData.values.toList())

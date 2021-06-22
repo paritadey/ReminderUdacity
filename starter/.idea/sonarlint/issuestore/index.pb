@@ -7,8 +7,6 @@ k
 ^app/src/main/java/com/udacity/project4/locationreminders/reminderslist/ReminderListFragment.kt,8\2\821e007eef0e1472577dcada944b46aba863b502
 á
 Wapp/src/main/java/com/udacity/project4/locationreminders/ReminderDescriptionActivity.kt,2\e\2e0ce9df06545e0ebf7c4b914218e8b8c1b478c7
-é
-^app/src/main/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModel.kt,3\7\37cd167cee92ce67358665e1341605524c528d3c
 _
 /app/src/main/java/com/udacity/project4/MyApp.kt,3\7\3715d3b4931ec610cd054e52b1e45e4aca42605c
 ì
@@ -33,21 +31,17 @@ Kapp/src/main/java/com/udacity/project4/locationreminders/data/dto/Result.kt,9\
 Lapp/src/test/java/com/udacity/project4/locationreminders/LiveDataTestUtil.kt,9\c\9cb5703c388ceb48706b81be5e84e023521af8d5
 }
 Mapp/src/test/java/com/udacity/project4/locationreminders/TestCoroutineRule.kt,1\8\18191a0f80b011501cc825b2270b2786b56cb29d
-
-Oapp/src/test/java/com/udacity/project4/locationreminders/data/FakeDataSource.kt,e\0\e0bab9c51b5d6ee00b1b7a76172676403055fd82
-É
-Sapp/src/main/java/com/udacity/project4/locationreminders/data/ReminderDataSource.kt,4\c\4c20d7583e8019b89ceb75916350741e60c0bf62
 }
 Mapp/src/test/java/com/udacity/project4/locationreminders/MainCoroutineRule.kt,b\9\b9553d5a5b4b8fac8d077669738045b4ef2fa3da
-è
-_app/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersLocalRepository.kt,0\6\0628f7b4044362b4d99a713a57435c46b6269a12
 å
 \app/src/androidTest/java/com/udacity/project4/locationreminders/data/local/FakeDataSource.kt,b\a\ba74524248799dbda5e0fc333f1dc4acaba51dfb
 ò
 happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTransitionsJobIntentService.kt,f\d\fd8084b1177a2300473d2a0983c748d230f964bc
-í
-bapp/src/test/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModelTest.kt,0\e\0e04996524a45e7d830bb34ce8e8c188d1f3eca2
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+Ä
+Papp/src/main/java/com/udacity/project4/locationreminders/data/dto/ReminderDTO.kt,8\5\857f48f0024512bf41868ee21aa2f27fa3483550
+l
+<app/src/androidTest/java/com/udacity/project4/NoteFactory.kt,0\8\08afae4cfb066c8bbc5350614757194a78afd1e4

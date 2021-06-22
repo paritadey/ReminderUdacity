@@ -1,13 +1,20 @@
 package com.udacity.project4.locationreminders.savereminder
 
+import android.app.Application
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
+import com.udacity.project4.locationreminders.data.FakeReminderTestRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.EspressoIdlingResource
 import junit.framework.Assert.assertEquals
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -18,22 +25,22 @@ class SaveReminderViewModelTest {
 
 
     // provide testing to the SaveReminderView and its live data objects
-    @Mock
-    var dataSource: FakeDataSource? = null
+    private lateinit var saveReminderViewModel: SaveReminderViewModel
 
-    @Mock
-    var saveReminderViewModel: SaveReminderViewModel? = null
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
+    private lateinit var tasksRepository: FakeReminderTestRepository
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     @Before
-    fun setUpViewModel() {
-        saveReminderViewModel =
-            dataSource?.let {
-                SaveReminderViewModel(
-                    ApplicationProvider.getApplicationContext(),
-                    it
-                )
-            }
+    fun setupViewModel() {
+        // We initialise the repository with no tasks
+        tasksRepository = FakeReminderTestRepository()
+        saveReminderViewModel = SaveReminderViewModel(Application(), tasksRepository)
     }
 
     @Test
