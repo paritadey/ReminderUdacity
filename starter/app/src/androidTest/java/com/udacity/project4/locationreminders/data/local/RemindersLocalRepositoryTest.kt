@@ -58,6 +58,14 @@ class RemindersLocalRepositoryTest {
         ViewMatchers.assertThat(result.data.title, CoreMatchers.`is`(newTask.title))
     }
 
+    @Test
+    fun errorReminder_retrievesReminder() = runBlocking {
+        val newTask = ReminderDTO("title", "description", "22.8745, 88.6971", 22.8745, 88.6971)
+        val result = repository.getReminder(newTask.id)
+        result as Result.Error
+        ViewMatchers.assertThat(result.message, CoreMatchers.`is`("data not found!"))
+    }
+
     @After
     fun cleanUp() {
         database.close()
