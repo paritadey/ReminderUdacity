@@ -1,12 +1,33 @@
 package com.udacity.project4.locationreminders.data
 
+import android.app.Application
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.core.IsEqual
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 import java.util.LinkedHashMap
 
 class FakeReminderTestRepository : ReminderDataSource {
     var reminderData: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
+    private lateinit var tasksRemoteDataSource: ReminderDataSource
+    private val task1 =
+        ReminderDTO("Title1", "Description1", "location1", 22.578, 88.6048, "ID1")
+    private val task2 =
+        ReminderDTO("Title2", "Description2", "location2", 22.59878, 88.7848, "ID2")
+    private val remoteReminder = listOf(task1, task2).sortedBy { it.id }
+    private lateinit var viewModel: SaveReminderViewModel
+
+    @Before
+    fun createRepository() {
+        tasksRemoteDataSource = FakeDataSource(remoteReminder.toMutableList())
+        viewModel = SaveReminderViewModel(Application(), tasksRemoteDataSource)
+    }
+
     private var shouldReturnError = false
     fun setReturnError(value: Boolean) {
         shouldReturnError = value
@@ -36,10 +57,20 @@ class FakeReminderTestRepository : ReminderDataSource {
     override suspend fun deleteAllReminders() {
         reminderData.clear()
     }
+
     fun addReminders(vararg tasks: ReminderDTO) {
         for (task in tasks) {
             reminderData[task.id] = task
         }
         runBlocking { getReminders() }
     }
+
+    @Test
+    fun getReminder_requestsAllRemindersFromDataSource() = runBlockingTest {
+        // When tasks are requested from the tasks repository
+        val tasks = tasksRemoteDataSource.getReminders() as Result.Success
+        // Then tasks are loaded from the remote data source
+        Assert.assertThat(tasks.data, IsEqual(remoteReminder))
+    }
+
 }
