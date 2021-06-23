@@ -9,8 +9,6 @@ _
 /app/src/main/java/com/udacity/project4/MyApp.kt,3\7\3715d3b4931ec610cd054e52b1e45e4aca42605c
 
 Oapp/src/androidTest/java/com/udacity/project4/util/DataBindingIdlingResource.kt,e\6\e67a73c78a010a94bbee41d11aa85a42c1a63d05
-l
-<app/src/androidTest/java/com/udacity/project4/DataFactory.kt,f\9\f9a7fa5a15aa57c1714798d14864a77e489993ff
 ˆ
 Xapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDatabase.kt,a\e\aeb320778073971cf5105d1d2666ff1599e8798c
 }
@@ -29,14 +27,10 @@ happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTrans
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 €
 Papp/src/main/java/com/udacity/project4/locationreminders/data/dto/ReminderDTO.kt,8\5\857f48f0024512bf41868ee21aa2f27fa3483550
-l
-<app/src/androidTest/java/com/udacity/project4/NoteFactory.kt,0\8\08afae4cfb066c8bbc5350614757194a78afd1e4
 ¦
 vapp/src/main/java/com/udacity/project4/locationreminders/savereminder/selectreminderlocation/SelectLocationFragment.kt,1\7\17866d22e15ed33d78f43f69073f8f6e7d685357
 ƒ
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDao.kt,6\2\6216cc146827994cafdc7d30e1ab16f3da779165
-
-_app/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersLocalRepository.kt,0\6\0628f7b4044362b4d99a713a57435c46b6269a12
 |
 Lapp/src/test/java/com/udacity/project4/locationreminders/LiveDataTestUtil.kt,9\c\9cb5703c388ceb48706b81be5e84e023521af8d5
 o
@@ -55,9 +49,9 @@ l
 `app/src/main/java/com/udacity/project4/locationreminders/reminderslist/RemindersListViewModel.kt,d\7\d7656f1bc2c98964a974a58a206d2a0bcf029b1e
 m
 =app/src/androidTest/java/com/udacity/project4/ToastMatcher.kt,e\c\ec36da943ac8ee5f6599c35af3528a7531476791
-”
-dapp/src/test/java/com/udacity/project4/locationreminders/reminderslist/RemindersListViewModelTest.kt,4\9\49b6c850619f9fae2db51a5ba1b0fc71e31b2471
 Ž
 ^app/src/main/java/com/udacity/project4/locationreminders/reminderslist/ReminderListFragment.kt,8\2\821e007eef0e1472577dcada944b46aba863b502
 
 ]app/src/main/java/com/udacity/project4/locationreminders/savereminder/SaveReminderFragment.kt,1\0\109fde60b06cc4e3310b961cd0e71880ecb5bf2f
+ƒ
+Sapp/src/main/java/com/udacity/project4/locationreminders/data/ReminderDataSource.kt,4\c\4c20d7583e8019b89ceb75916350741e60c0bf62
