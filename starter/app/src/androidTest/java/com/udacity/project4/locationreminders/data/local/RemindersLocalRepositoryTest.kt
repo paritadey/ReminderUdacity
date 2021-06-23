@@ -3,10 +3,13 @@ package com.udacity.project4.locationreminders.data.local
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.matcher.ViewMatchers
 import com.udacity.project4.NoteFactory
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
@@ -14,48 +17,49 @@ import org.junit.*
 
 @ExperimentalCoroutinesApi
 class RemindersLocalRepositoryTest {
+    private lateinit var localDataSource: ReminderLocalDataSource
+    private lateinit var database: RemindersDatabase
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-
-    private lateinit var database: RemindersDatabase
-
     @Before
-    fun setUpDb() {
+    fun setup() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             RemindersDatabase::class.java
-        ).build()
+        )
+            .allowMainThreadQueries()
+            .build()
+
+        localDataSource =
+            ReminderLocalDataSource(
+                database.reminderDao(),
+                Dispatchers.Main
+            )
     }
 
     @Test
-    fun insertReminder() = runBlockingTest {
-        val reminder = NoteFactory.makeNote()
-        database.reminderDao().saveReminder(reminder)
-        val reminderData = database.reminderDao().getReminders()
-        assert(reminderData.isNotEmpty())
+    fun saveReminder_retrievesReminder() = runBlocking {
+        val newTask = ReminderDTO("title", "description", "22.8745, 88.6971", 22.8745, 88.6971)
+        localDataSource.saveReminder(newTask)
+        val result = localDataSource.getReminder(newTask.id)
+        result as Result.Success
+        ViewMatchers.assertThat(result.data.title, CoreMatchers.`is`("title"))
+        ViewMatchers.assertThat(result.data.description, CoreMatchers.`is`("description"))
     }
 
     @Test
-    fun clearRemindersClearsData() = runBlockingTest {
-        val reminder = NoteFactory.makeNote()
-        database.reminderDao().saveReminder(reminder)
-        database.reminderDao().deleteAllReminders()
-        assert(database.reminderDao().getReminders().isEmpty())
+    fun completeReminder_retrievedReminderIsComplete() = runBlocking {
+        val newTask = ReminderDTO("title", "description", "22.8745, 88.6971", 22.8745, 88.6971)
+        localDataSource.saveReminder(newTask)
+        val result = localDataSource.getReminder(newTask.id)
+        result as Result.Success
+        ViewMatchers.assertThat(result.data.title, CoreMatchers.`is`(newTask.title))
     }
 
     @After
-    fun closeDb() = database.close()
-
-    @Test
-    fun checkReminder() = runBlockingTest {
-        val reminder = NoteFactory.makeNote()
-        database.reminderDao().saveReminder(reminder)
-        val loaded = database.reminderDao().getReminderById(reminder.id)
-        MatcherAssert.assertThat<ReminderDTO>(loaded as ReminderDTO, CoreMatchers.notNullValue())
-        MatcherAssert.assertThat(loaded.id, CoreMatchers.`is`(reminder.id))
-        MatcherAssert.assertThat(loaded.title, CoreMatchers.`is`(reminder.title))
-        MatcherAssert.assertThat(loaded.description, CoreMatchers.`is`(reminder.description))
+    fun cleanUp() {
+        database.close()
     }
-
 }
