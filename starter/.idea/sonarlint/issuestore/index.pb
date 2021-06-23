@@ -7,8 +7,6 @@ k
 Wapp/src/main/java/com/udacity/project4/locationreminders/ReminderDescriptionActivity.kt,2\e\2e0ce9df06545e0ebf7c4b914218e8b8c1b478c7
 _
 /app/src/main/java/com/udacity/project4/MyApp.kt,3\7\3715d3b4931ec610cd054e52b1e45e4aca42605c
-“
-capp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/RemindersDatabaseTest.kt,b\7\b73d6720660bc53b78a69e39270f852181385101
 
 Oapp/src/androidTest/java/com/udacity/project4/util/DataBindingIdlingResource.kt,e\6\e67a73c78a010a94bbee41d11aa85a42c1a63d05
 l
@@ -23,8 +21,6 @@ Fapp/src/main/java/com/udacity/project4/utils/EspressoIdlingResource.kt,2\2\22c
 Mapp/src/test/java/com/udacity/project4/locationreminders/TestCoroutineRule.kt,1\8\18191a0f80b011501cc825b2270b2786b56cb29d
 }
 Mapp/src/test/java/com/udacity/project4/locationreminders/MainCoroutineRule.kt,b\9\b9553d5a5b4b8fac8d077669738045b4ef2fa3da
-Œ
-\app/src/androidTest/java/com/udacity/project4/locationreminders/data/local/FakeDataSource.kt,b\a\ba74524248799dbda5e0fc333f1dc4acaba51dfb
 ˜
 happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTransitionsJobIntentService.kt,f\d\fd8084b1177a2300473d2a0983c748d230f964bc
 <
@@ -41,12 +37,6 @@ vapp/src/main/java/com/udacity/project4/locationreminders/savereminder/selectrem
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersDao.kt,6\2\6216cc146827994cafdc7d30e1ab16f3da779165
 
 _app/src/main/java/com/udacity/project4/locationreminders/data/local/RemindersLocalRepository.kt,0\6\0628f7b4044362b4d99a713a57435c46b6269a12
-Ž
-^app/src/androidTest/java/com/udacity/project4/locationreminders/data/local/RemindersDaoTest.kt,1\b\1b2e1ffa770ad0f6973d85e0775ff507825c0ce5
-ƒ
-Sapp/src/main/java/com/udacity/project4/locationreminders/data/ReminderDataSource.kt,4\c\4c20d7583e8019b89ceb75916350741e60c0bf62
-
-Oapp/src/test/java/com/udacity/project4/locationreminders/data/FakeDataSource.kt,e\0\e0bab9c51b5d6ee00b1b7a76172676403055fd82
 |
 Lapp/src/test/java/com/udacity/project4/locationreminders/LiveDataTestUtil.kt,9\c\9cb5703c388ceb48706b81be5e84e023521af8d5
 o
@@ -55,14 +45,10 @@ _
 /app/src/main/java/com/udacity/project4/Event.kt,c\b\cb64d6def89a0586a2ec0349207b8d8f02656a48
 Ž
 ^app/src/main/java/com/udacity/project4/locationreminders/data/local/ReminderLocalDataSource.kt,3\4\34c95862b024f9b68c6d34ee8a1995f2c45c704c
-™
-iapp/src/androidTest/java/com/udacity/project4/locationreminders/data/local/ReminderLocalDataSourceTest.kt,0\7\070419197f8252d0af2e6d0966fb30a7ab9058e2
 {
 Kapp/src/main/java/com/udacity/project4/locationreminders/data/dto/Result.kt,9\3\935f28647bfa920de6bd586d5ec3d996a25d3710
 l
 <app/src/main/java/com/udacity/project4/base/BaseViewModel.kt,e\a\ea2c619da8f3981ea03e0e76cdb95d21e83c2bdf
-’
-bapp/src/test/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModelTest.kt,0\e\0e04996524a45e7d830bb34ce8e8c188d1f3eca2
 Ž
 ^app/src/main/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModel.kt,3\7\37cd167cee92ce67358665e1341605524c528d3c
 
