@@ -37,8 +37,6 @@ o
 ?app/src/main/java/com/udacity/project4/utils/SingleLiveEvent.kt,f\c\fcf8b03dda259efbaefb21a52e6b2cd177facf75
 _
 /app/src/main/java/com/udacity/project4/Event.kt,c\b\cb64d6def89a0586a2ec0349207b8d8f02656a48
-Ž
-^app/src/main/java/com/udacity/project4/locationreminders/data/local/ReminderLocalDataSource.kt,3\4\34c95862b024f9b68c6d34ee8a1995f2c45c704c
 {
 Kapp/src/main/java/com/udacity/project4/locationreminders/data/dto/Result.kt,9\3\935f28647bfa920de6bd586d5ec3d996a25d3710
 l
