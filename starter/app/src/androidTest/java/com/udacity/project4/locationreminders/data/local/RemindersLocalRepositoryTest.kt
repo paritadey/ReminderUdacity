@@ -47,4 +47,15 @@ class RemindersLocalRepositoryTest {
     @After
     fun closeDb() = database.close()
 
+    @Test
+    fun checkReminder() = runBlockingTest {
+        val reminder = NoteFactory.makeNote()
+        database.reminderDao().saveReminder(reminder)
+        val loaded = database.reminderDao().getReminderById(reminder.id)
+        MatcherAssert.assertThat<ReminderDTO>(loaded as ReminderDTO, CoreMatchers.notNullValue())
+        MatcherAssert.assertThat(loaded.id, CoreMatchers.`is`(reminder.id))
+        MatcherAssert.assertThat(loaded.title, CoreMatchers.`is`(reminder.title))
+        MatcherAssert.assertThat(loaded.description, CoreMatchers.`is`(reminder.description))
+    }
+
 }
