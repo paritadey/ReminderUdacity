@@ -1,6 +1,9 @@
 package com.udacity.project4.locationreminders.data
 
 import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
@@ -21,6 +24,7 @@ class FakeReminderTestRepository : ReminderDataSource {
         ReminderDTO("Title2", "Description2", "location2", 22.59878, 88.7848, "ID2")
     private val remoteReminder = listOf(task1, task2).sortedBy { it.id }
     private lateinit var viewModel: SaveReminderViewModel
+    private val observableReminders = MutableLiveData<Result<List<ReminderDTO>>>()
 
     @Before
     fun createRepository() {
@@ -73,4 +77,30 @@ class FakeReminderTestRepository : ReminderDataSource {
         Assert.assertThat(tasks.data, IsEqual(remoteReminder))
     }
 
+    override suspend fun refreshReminders() {
+        observableReminders.value = getReminders()
+    }
+
+    override suspend fun refreshReminder(id: String) {
+        refreshReminders()
+    }
+
+    override suspend fun observeReminders(): LiveData<Result<List<ReminderDTO>>> {
+        return observableReminders
+    }
+
+    override suspend fun observeTask(reminderId: String): LiveData<Result<ReminderDTO>> {
+        return observableReminders.map { result ->
+            when (result) {
+                is Result.Success -> {
+                    Result.Success(result.data.first { it.id == reminderId })
+                }
+                is Result.Error -> {
+                    Result.Error(result.message)
+                }
+                else -> Result.Error("")
+            }
+        }
+
+    }
 }

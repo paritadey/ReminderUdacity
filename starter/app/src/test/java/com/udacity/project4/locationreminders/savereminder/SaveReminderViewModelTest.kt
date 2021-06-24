@@ -11,9 +11,11 @@ import com.udacity.project4.locationreminders.getOrAwaitValue
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.EspressoIdlingResource
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertTrue
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert
 import org.junit.Before
 import org.junit.Rule
@@ -58,32 +60,20 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun check_loading() {
-        val data = ReminderDataItem(
-            "title",
-            "description",
-            "location",
-            22.8869,
-            88.657,
-            "id"
-        )
-        saveReminderViewModel.validateAndSaveReminder(data)
-        saveReminderViewModel.showLoading.observeForever {}
-        assertEquals(saveReminderViewModel.showLoading.value, false)
+    fun loadStatisticsWhenTasksAreUnavailable_callErrorToDisplay() {
+        tasksRepository.setReturnError(true)
+        saveReminderViewModel.refresh()
+        assertTrue(saveReminderViewModel.empty.getOrAwaitValue())
+        assertTrue(saveReminderViewModel.error.getOrAwaitValue())
     }
 
     @Test
-    fun shouldReturnError() {
-        val data = ReminderDataItem(
-            "title",
-            "description",
-            "location",
-            null,
-            null,
-            "id"
-        )
-        saveReminderViewModel.validateAndSaveReminder(data)
-        saveReminderViewModel.showLoading.observeForever {}
-        assertEquals(saveReminderViewModel.showErrorMessage.value, null)
+    fun loadReminders_loading() {
+        mainCoroutineRule.pauseDispatcher()
+        saveReminderViewModel.refresh()
+        assertTrue(saveReminderViewModel.showLoading.getOrAwaitValue())
+        mainCoroutineRule.resumeDispatcher()
+        assertTrue(saveReminderViewModel.showLoading.getOrAwaitValue() == false)
     }
+
 }
