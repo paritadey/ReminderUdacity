@@ -46,7 +46,7 @@ import org.koin.android.ext.android.inject
 
 class SelectLocationFragment : BaseFragment() {
 
-    private lateinit var mLocationCallback: LocationCallback
+    var mLocationCallback: LocationCallback? = null
     private var googleApiClient: GoogleApiClient? = null
 
 
@@ -438,6 +438,8 @@ class SelectLocationFragment : BaseFragment() {
                         }).setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
                             override fun onClick(dialog: DialogInterface?, which: Int) {
                                 dialog?.dismiss()
+                                Snackbar.make(binding.root,"Location permission not provided!",Snackbar.LENGTH_LONG).show()
+                                findNavController().popBackStack()
                             }
 
                         }).show()
@@ -548,8 +550,10 @@ class SelectLocationFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        LocationServices.getFusedLocationProviderClient(requireActivity() as RemindersActivity)
-            .removeLocationUpdates(mLocationCallback)
+        mLocationCallback?.let {
+            LocationServices.getFusedLocationProviderClient(requireActivity() as RemindersActivity)
+                .removeLocationUpdates(mLocationCallback)
+        }
         super.onDestroyView()
     }
 
