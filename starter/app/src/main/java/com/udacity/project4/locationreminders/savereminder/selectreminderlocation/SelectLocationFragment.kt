@@ -181,15 +181,12 @@ class SelectLocationFragment : BaseFragment() {
         if (ActivityCompat.checkSelfPermission(
                 requireActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+            ) != PackageManager.PERMISSION_GRANTED) {
             return@OnMapReadyCallback
         } else {
             mMap.isMyLocationEnabled = true
             mMap.uiSettings.isMyLocationButtonEnabled = false
+            fetchLocation()
         }
     }
 
@@ -468,6 +465,7 @@ class SelectLocationFragment : BaseFragment() {
             )
                 .setAction(R.string.settings) {
                     // Displays App settings screen.
+                    //findNavController().popBackStack()
                     startActivity(Intent().apply {
                         action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                         data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
@@ -565,6 +563,12 @@ class SelectLocationFragment : BaseFragment() {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(callback)
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED) {
+            fetchLocation()
+        }
     }
 
     @TargetApi(29)
@@ -647,12 +651,13 @@ class SelectLocationFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (ActivityCompat.checkSelfPermission(
+        /*if (ActivityCompat.checkSelfPermission(
                 this.requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
             fetchLocation()
-        }
+        }*/
+        showMap()
     }
 
     override fun onDestroyView() {
