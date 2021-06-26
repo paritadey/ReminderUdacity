@@ -17,13 +17,16 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.RemindersDao
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.getOrAwaitValue
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.EspressoIdlingResource
+import junit.framework.Assert
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.*
 import org.junit.runner.RunWith
@@ -54,7 +57,6 @@ class RemindersListViewModelTest {
     @ExperimentalCoroutinesApi
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
-
     @Before
     fun setupReminderListViewModel() {
         tasksRepository = FakeReminderTestRepository()
@@ -64,8 +66,17 @@ class RemindersListViewModelTest {
     @Test
     fun loadReminders_loading() {
         mainCoroutineRule.pauseDispatcher()
-        MatcherAssert.assertThat(reminderListViewModel.dataLoading.getOrAwaitValue(), `is`(false))
+        reminderListViewModel.refresh()
+        Assert.assertTrue(reminderListViewModel.showLoading.getOrAwaitValue())
         mainCoroutineRule.resumeDispatcher()
-        MatcherAssert.assertThat(reminderListViewModel.dataLoading.getOrAwaitValue(), `is`(false))
+        Assert.assertTrue(reminderListViewModel.showLoading.getOrAwaitValue() == false)
     }
+    @Test
+    fun loadReminderssWhenUnavailable_callErrorToDisplay() {
+        tasksRepository.setReturnError(true)
+        reminderListViewModel.refresh()
+        MatcherAssert.assertThat(reminderListViewModel.empty.getOrAwaitValue(), `is`(true))
+        MatcherAssert.assertThat(reminderListViewModel.error.getOrAwaitValue(), `is`(true))
+    }
+
 }

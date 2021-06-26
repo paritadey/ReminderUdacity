@@ -37,13 +37,9 @@ _
 Kapp/src/main/java/com/udacity/project4/locationreminders/data/dto/Result.kt,9\3\935f28647bfa920de6bd586d5ec3d996a25d3710
 l
 <app/src/main/java/com/udacity/project4/base/BaseViewModel.kt,e\a\ea2c619da8f3981ea03e0e76cdb95d21e83c2bdf
-Ž
-^app/src/main/java/com/udacity/project4/locationreminders/savereminder/SaveReminderViewModel.kt,3\7\37cd167cee92ce67358665e1341605524c528d3c
-
-`app/src/main/java/com/udacity/project4/locationreminders/reminderslist/RemindersListViewModel.kt,d\7\d7656f1bc2c98964a974a58a206d2a0bcf029b1e
 m
 =app/src/androidTest/java/com/udacity/project4/ToastMatcher.kt,e\c\ec36da943ac8ee5f6599c35af3528a7531476791
-Ž
-^app/src/main/java/com/udacity/project4/locationreminders/reminderslist/ReminderListFragment.kt,8\2\821e007eef0e1472577dcada944b46aba863b502
 ƒ
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/ReminderDataSource.kt,4\c\4c20d7583e8019b89ceb75916350741e60c0bf62
+
+Oapp/src/main/java/com/udacity/project4/authentication/AuthenticationActivity.kt,9\3\93d629ede14cd31323c6e2caba36fd776bc8202f

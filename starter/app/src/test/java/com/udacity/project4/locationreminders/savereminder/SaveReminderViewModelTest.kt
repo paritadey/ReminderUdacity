@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.savereminder
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
+import com.udacity.project4.Event
 import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.FakeReminderTestRepository
@@ -14,6 +15,7 @@ import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert
@@ -60,7 +62,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun loadStatisticsWhenTasksAreUnavailable_callErrorToDisplay() {
+    fun loadReminderWhenRemindersAreUnavailable_callErrorToDisplay() {
         tasksRepository.setReturnError(true)
         saveReminderViewModel.refresh()
         assertTrue(saveReminderViewModel.empty.getOrAwaitValue())

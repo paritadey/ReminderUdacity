@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.reminderslist
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.udacity.project4.base.BaseViewModel
 import com.udacity.project4.locationreminders.data.ReminderDataSource
@@ -18,6 +19,8 @@ class RemindersListViewModel(
     val remindersList = MutableLiveData<List<ReminderDataItem>>()
     private val _dataLoading = MutableLiveData<Boolean>(false)
     val dataLoading: LiveData<Boolean> = _dataLoading
+    lateinit var error: LiveData<Boolean>
+    lateinit var empty: LiveData<Boolean>
 
     /**
      * Get all the reminders from the DataSource and add them to the remindersList to be shown on the UI,
@@ -55,15 +58,20 @@ class RemindersListViewModel(
             invalidateShowNoData()
         }
     }
+    fun refresh() {
+        showLoading.value = true
+        viewModelScope.launch {
+            dataSource.refreshReminders()
+            error = dataSource.observeReminders().map { it is Result.Error }
+            empty = dataSource.observeReminders().map { (it as? Result.Success)?.data.isNullOrEmpty() }
+            showLoading.value = false
+        }
+    }
 
     /**
      * Inform the user that there's not any data if the remindersList is empty
      */
     private fun invalidateShowNoData() {
         showNoData.value = remindersList.value == null || remindersList.value!!.isEmpty()
-    }
-
-    fun getReminderList() : MutableLiveData<List<ReminderDataItem>>{
-        return remindersList
     }
 }
