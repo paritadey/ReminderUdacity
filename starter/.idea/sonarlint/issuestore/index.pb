@@ -1,8 +1,6 @@
 
 Ž
 ^app/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceBroadcastReceiver.kt,c\e\ceb11f023f5e8e4296620f533c66fabdb66b4fbc
-‡
-Wapp/src/main/java/com/udacity/project4/locationreminders/ReminderDescriptionActivity.kt,2\e\2e0ce9df06545e0ebf7c4b914218e8b8c1b478c7
 _
 /app/src/main/java/com/udacity/project4/MyApp.kt,3\7\3715d3b4931ec610cd054e52b1e45e4aca42605c
 

@@ -58,6 +58,7 @@ class SaveReminderFragment : BaseFragment() {
     private val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
     private val LOCATION_PERMISSION_INDEX = 0
     private var googleApiClient: GoogleApiClient? = null
+    private val REQUEST_CODE_LOCATION_SETTING = 152
     val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.HOURS.toMillis(1)
 
 
@@ -178,7 +179,7 @@ class SaveReminderFragment : BaseFragment() {
             Geofence.Builder()
                 .setRequestId(data.id)
                 .setCircularRegion(data.latitude ?: 0.0, data.longitude ?: 0.0, 100f)
-                .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setLoiteringDelay(1000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
                 .build()
@@ -372,8 +373,7 @@ class SaveReminderFragment : BaseFragment() {
         }
 
         Log.d("TAG", "Request foreground only location permission")
-        ActivityCompat.requestPermissions(
-            requireActivity(),
+        requestPermissions(
             permissionsArray,
             resultCode
         )
@@ -423,9 +423,19 @@ class SaveReminderFragment : BaseFragment() {
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
-                    exception.startResolutionForResult(
-                        requireActivity(),
-                        REQUEST_TURN_DEVICE_LOCATION_ON
+                    /* exception.startResolutionForResult(
+                         requireActivity(),
+                         REQUEST_TURN_DEVICE_LOCATION_ON
+                     )*/
+
+                    startIntentSenderForResult(
+                        geofencePendingIntent.intentSender,
+                        REQUEST_CODE_LOCATION_SETTING,
+                        null,
+                        0,
+                        0,
+                        0,
+                        null
                     )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     Log.d("TAG", "Error geting location settings resolution: " + sendEx.message)

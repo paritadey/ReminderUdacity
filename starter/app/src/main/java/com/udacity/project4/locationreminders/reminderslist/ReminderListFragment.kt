@@ -225,8 +225,7 @@ class ReminderListFragment : BaseFragment() {
         }
 
         Log.d("TAG", "Request foreground only location permission")
-        ActivityCompat.requestPermissions(
-            requireActivity(),
+        requestPermissions(
             permissionsArray,
             resultCode
         )
