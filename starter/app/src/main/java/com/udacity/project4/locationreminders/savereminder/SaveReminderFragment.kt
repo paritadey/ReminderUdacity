@@ -47,6 +47,7 @@ import com.udacity.project4.locationreminders.savereminder.selectreminderlocatio
 import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class SaveReminderFragment : BaseFragment() {
@@ -57,6 +58,7 @@ class SaveReminderFragment : BaseFragment() {
     private val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
     private val LOCATION_PERMISSION_INDEX = 0
     private var googleApiClient: GoogleApiClient? = null
+    val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.HOURS.toMillis(1)
 
 
     private val runningQOrLater =
@@ -176,7 +178,7 @@ class SaveReminderFragment : BaseFragment() {
             Geofence.Builder()
                 .setRequestId(data.id)
                 .setCircularRegion(data.latitude ?: 0.0, data.longitude ?: 0.0, 100f)
-                .setExpirationDuration(45 * 60 * 1000)
+                .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                 .setLoiteringDelay(1000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
                 .build()

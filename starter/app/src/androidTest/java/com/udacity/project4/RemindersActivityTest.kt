@@ -114,22 +114,16 @@ class RemindersActivityTest :
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         onView(ViewMatchers.withId(com.udacity.project4.R.id.addReminderFAB)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(
-            ViewActions.typeText(
-                "Test"
-            )
-        )
-        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderDescription)).perform(
-            ViewActions.typeText("Description")
-        )
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderTitle)).perform(ViewActions.typeText("Test"))
+        onView(ViewMatchers.withId(com.udacity.project4.R.id.reminderDescription)).perform(ViewActions.typeText("Description"))
         onView(ViewMatchers.withId(com.udacity.project4.R.id.selectLocation)).perform(ViewActions.click())
         onView(isRoot()).perform(waitFor(5000))
-        onView(withText("Marker")).perform(ViewActions.click())
         onView(ViewMatchers.withId(com.udacity.project4.R.id.proceed)).perform(ViewActions.click())
         onView(isRoot()).perform(waitFor(2000))
         onView(ViewMatchers.withId(com.udacity.project4.R.id.saveReminder)).perform(ViewActions.click())
         onView(isRoot()).perform(waitFor(2000))
-        onView(withText("Reminder Saved !")).inRoot(ToastMatcher()).check(matches(isDisplayed()))
+        onView(withText("Reminder Saved !")).inRoot(ToastMatcher())
+            .check(matches(isDisplayed()))
         activityScenario.close()
     }
 
