@@ -135,9 +135,9 @@ class SaveReminderFragment : BaseFragment() {
             /*if (!statusCheck()) {
                 enableLoc()
             } else {*/
-                _viewModel.navigationCommand.value =
-                    NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
-          //  }
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+            //  }
         }
 
         binding.saveReminder.setOnClickListener {
@@ -215,7 +215,7 @@ class SaveReminderFragment : BaseFragment() {
         super.onDestroy()
         //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
-      //  removeGeofences()
+        //  removeGeofences()
     }
 
     private fun getRuntimePermissions(): Boolean {
@@ -264,36 +264,37 @@ class SaveReminderFragment : BaseFragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE && permissions.isNotEmpty()) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-                val rational =
-                    shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
-                        permissions[1]
-                    )
-                if (!rational) {
-                    AlertDialog.Builder(requireActivity())
-                        .setTitle("Permission required!")
-                        .setMessage("This permission is essential to proceed further.")
-                        .setPositiveButton("OK", object : DialogInterface.OnClickListener {
-                            override fun onClick(dialog: DialogInterface?, which: Int) {
-                                val intent = Intent()
-                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                val uri: Uri =
-                                    Uri.fromParts("package", requireActivity().packageName, null)
-                                intent.data = uri
-                                startActivity(intent)
-                            }
-                        }).setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
-                            override fun onClick(dialog: DialogInterface?, which: Int) {
-                                dialog?.dismiss()
-                            }
+        /* if (requestCode == REQUEST_CODE && permissions.isNotEmpty()) {
+             if (grantResults[0] != PackageManager.PERMISSION_GRANTED && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                 val rational =
+                     shouldShowRequestPermissionRationale(permissions[0]) && shouldShowRequestPermissionRationale(
+                         permissions[1]
+                     )
+                 if (!rational) {
+                     AlertDialog.Builder(requireActivity())
+                         .setTitle("Permission required!")
+                         .setMessage("This permission is essential to proceed further.")
+                         .setPositiveButton("OK", object : DialogInterface.OnClickListener {
+                             override fun onClick(dialog: DialogInterface?, which: Int) {
+                                 val intent = Intent()
+                                 intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                 val uri: Uri =
+                                     Uri.fromParts("package", requireActivity().packageName, null)
+                                 intent.data = uri
+                                 startActivity(intent)
+                             }
+                         }).setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                             override fun onClick(dialog: DialogInterface?, which: Int) {
+                                 dialog?.dismiss()
+                             }
 
-                        }).show()
-                } else {
-                    getRuntimePermissions()
-                }
-            }
-        } else if (
+                         }).show()
+                 } else {
+                     getRuntimePermissions()
+                 }
+             }
+         } else*/
+        if (
             grantResults.isEmpty() ||
             grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
             (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&

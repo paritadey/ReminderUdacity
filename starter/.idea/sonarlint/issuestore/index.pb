@@ -37,8 +37,6 @@ _
 Kapp/src/main/java/com/udacity/project4/locationreminders/data/dto/Result.kt,9\3\935f28647bfa920de6bd586d5ec3d996a25d3710
 l
 <app/src/main/java/com/udacity/project4/base/BaseViewModel.kt,e\a\ea2c619da8f3981ea03e0e76cdb95d21e83c2bdf
-m
-=app/src/androidTest/java/com/udacity/project4/ToastMatcher.kt,e\c\ec36da943ac8ee5f6599c35af3528a7531476791
 ƒ
 Sapp/src/main/java/com/udacity/project4/locationreminders/data/ReminderDataSource.kt,4\c\4c20d7583e8019b89ceb75916350741e60c0bf62
 
