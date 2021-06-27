@@ -181,7 +181,8 @@ class SelectLocationFragment : BaseFragment() {
         if (ActivityCompat.checkSelfPermission(
                 requireActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED) {
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return@OnMapReadyCallback
         } else {
             mMap.isMyLocationEnabled = true
@@ -215,8 +216,8 @@ class SelectLocationFragment : BaseFragment() {
         //add style to the map
         //put a marker to location that the user selected
         //call this function after the user confirms on the selected location
-      //  getRuntimePermissions()
-       checkPermissions()
+        //  getRuntimePermissions()
+        checkPermissions()
         binding.proceed.setOnClickListener {
             if (getRuntimePermissions() && statusCheck())
                 onLocationSelected()
@@ -229,7 +230,6 @@ class SelectLocationFragment : BaseFragment() {
             }
         }
     }
-
 
 
     private fun setPoiClick() {
@@ -484,6 +484,7 @@ class SelectLocationFragment : BaseFragment() {
             requestForegroundAndBackgroundLocationPermissions()
         }
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
@@ -566,7 +567,8 @@ class SelectLocationFragment : BaseFragment() {
         if (ActivityCompat.checkSelfPermission(
                 this.requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED) {
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             fetchLocation()
         }
     }
@@ -619,6 +621,14 @@ class SelectLocationFragment : BaseFragment() {
                         "TAG",
                         "current location ${locationResult.lastLocation.latitude} and latitude ${locationResult.lastLocation.longitude}"
                     )
+/*
+                    askUserForMarkerOrPOI(
+                        LatLng(userLocation.latitude, userLocation.longitude),
+                        DEFAULT_ZOOM,
+                        "My Location"
+                    )
+*/
+
                     moveCamera(
                         LatLng(
                             locationResult.lastLocation.latitude,
