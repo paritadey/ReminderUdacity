@@ -15,8 +15,6 @@ Fapp/src/main/java/com/udacity/project4/utils/EspressoIdlingResource.kt,2\2\22c
 Mapp/src/test/java/com/udacity/project4/locationreminders/TestCoroutineRule.kt,1\8\18191a0f80b011501cc825b2270b2786b56cb29d
 }
 Mapp/src/test/java/com/udacity/project4/locationreminders/MainCoroutineRule.kt,b\9\b9553d5a5b4b8fac8d077669738045b4ef2fa3da
-˜
-happ/src/main/java/com/udacity/project4/locationreminders/geofence/GeofenceTransitionsJobIntentService.kt,f\d\fd8084b1177a2300473d2a0983c748d230f964bc
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 @

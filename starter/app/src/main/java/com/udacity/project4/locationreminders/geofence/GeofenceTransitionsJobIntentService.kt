@@ -82,40 +82,43 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     // get the request id of the current geofence
     private fun sendNotification(triggeringGeofences: List<Geofence>) {
-        val requestId = triggeringGeofences[0].requestId
-        Log.d("TAG", "sendNotification loading: $requestId")
-        CoroutineScope(coroutineContext).launch(SupervisorJob()) {
-            //get the reminder with the request id
-            try {
-                val result = RemindersDatabase.getDatabase(applicationContext).reminderDao().getReminderById(requestId) //.getReminderById(requestId)
-                Log.d("TAG", "sendNotification success: ${result?.title}")
-                if (result is ReminderDTO) {
-                    //send a notification to the user with the reminder details
-                    Log.d("TAG", "sendNotification inside: $requestId")
-                    sendNotification(
-                        this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                            result.title,
-                            result.description,
-                            result.location,
-                            result.latitude,
-                            result.longitude,
-                            result.id
+        for(i in triggeringGeofences) {
+            val requestId = i.requestId
+            Log.d("TAG", "sendNotification loading: $requestId")
+            CoroutineScope(coroutineContext).launch(SupervisorJob()) {
+                //get the reminder with the request id
+                try {
+                    val result = RemindersDatabase.getDatabase(applicationContext).reminderDao()
+                        .getReminderById(requestId) //.getReminderById(requestId)
+                    Log.d("TAG", "sendNotification success: ${result?.title}")
+                    if (result is ReminderDTO) {
+                        //send a notification to the user with the reminder details
+                        Log.d("TAG", "sendNotification inside: $requestId")
+                        sendNotification(
+                            this@GeofenceTransitionsJobIntentService, ReminderDataItem(
+                                result.title,
+                                result.description,
+                                result.location,
+                                result.latitude,
+                                result.longitude,
+                                result.id
+                            )
                         )
-                    )
-                }else{
-                    sendNotification(
-                        this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                            "No Data",
-                            "No Data",
-                            "No Data",
-                            0.0,
-                            0.0,
-                            "No Data"
+                    } else {
+                        sendNotification(
+                            this@GeofenceTransitionsJobIntentService, ReminderDataItem(
+                                "No Data",
+                                "No Data",
+                                "No Data",
+                                0.0,
+                                0.0,
+                                "No Data"
+                            )
                         )
-                    )
+                    }
+                } catch (e: Exception) {
+                    Log.d("TAG", "sendNotification failure: ${e.message}")
                 }
-            }catch (e:Exception){
-                Log.d("TAG", "sendNotification failure: ${e.message}")
             }
         }
     }
